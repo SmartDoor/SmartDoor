@@ -1,5 +1,6 @@
 ﻿using SmartDoor.ComponentHandlers;
 using System;
+using System.Timers;
 
 namespace SmartDoor
 {
@@ -11,12 +12,16 @@ namespace SmartDoor
         private RFIDHandler rfidHandler;
         private MotorHandler motorHandler;
         private InterfaceHandler interfaceHandler;
+        private Timer aTimer;
 
         public MasterController()
         {
             rfidHandler = new RFIDHandler();
             motorHandler = new MotorHandler(1);
             interfaceHandler = new InterfaceHandler();
+            aTimer = new System.Timers.Timer(1000 * 5);
+            aTimer.AutoReset = true;
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
         }
 
         /// <summary>
@@ -52,6 +57,7 @@ namespace SmartDoor
             {
                 case packageType.motorPackageLocked:
                     Console.Out.WriteLine("Controller: Locked Door: " + value.message);
+                    aTimer.Stop();
                     interfaceHandler.GreenLED(false);
                     interfaceHandler.RedLED(true);
                     break;
@@ -69,13 +75,20 @@ namespace SmartDoor
 
                 case packageType.RfidPackageLost:
                     Console.Out.WriteLine("Controller: LOST RFID TAG: " + value.message);
-                    motorHandler.Lock();
+                    aTimer.Start();
                     break;
 
                 default:
                     throw new Exception("Unknown typeEnum.");                   
             }
         }
+
+        private void OnTimedEvent(object sender, ElapsedEventArgs e)
+        {
+            motorHandler.Lock();
+            aTimer.Enabled = false;
+        }
+
         /// <summary>
         /// Handle errors from observable objects this controller has subscribed to.
         /// </summary>
