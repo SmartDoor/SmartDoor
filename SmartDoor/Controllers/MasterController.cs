@@ -19,7 +19,7 @@ namespace SmartDoor
             rfidHandler = new RFIDHandler();
             motorHandler = new MotorHandler(1);
             interfaceHandler = new InterfaceHandler();
-            aTimer = new System.Timers.Timer(1000 * 5);
+            aTimer = new Timer(1000 * 5);
             aTimer.AutoReset = true;
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
         }
