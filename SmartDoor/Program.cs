@@ -1,21 +1,22 @@
 ﻿using System;
-using Phidgets;
-using Phidgets.Events;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 
 /// <summary>
+/// File: Program.cs
+/// Version: 2015-11-24
 /// 
-/// 
+/// Description:
+///  Main Program file, responsible for starting the the services needed by
+///  out project.
 /// </summary>
 namespace SmartDoor
 {
     class Program
     {
+
+        /// <summary>
+        /// Launches the doors commandline interface.
+        /// </summary>
+        /// <param name="args">Not used by this program yet.</param>
         static void Main(string[] args)
         {
             MotorHandler motorHandler = new MotorHandler(1);
@@ -27,8 +28,10 @@ namespace SmartDoor
             Console.WriteLine("Welcome to Door-CLI");
             while (!input.Equals("exit"))
             {
+                Console.Out.Write("$ ");
                 input = Console.ReadLine();
-                switch(input)
+
+                switch (input)
                 {
                     case "Lock":
                         Console.WriteLine("Locking door");
@@ -55,9 +58,8 @@ namespace SmartDoor
                         break;
                 }
             }
-            
-
-         
+            // Handle shutdown...
+            motorHandler.shutDown();
         }
     }
 }

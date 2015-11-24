@@ -1,38 +1,30 @@
 ﻿using System;
-
 using Phidgets;
 using Phidgets.Events;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace SmartDoor
 {
     class MotorHandler
     {
-        private static double DOOR_LOCKED = 180;
-        private static double DOOR_UNLOCKED = 0;
+        private static double DOOR_LOCKED = 210;
+        private static double DOOR_UNLOCKED = 30;
 
-        private AdvancedServo m_ServoController;
-        private AdvancedServoServo[] m_Servos;
+        private AdvancedServo servoController;
+        private AdvancedServoServo[] servoMotor;
 
         private double targetPosition;
         private double currentPosition;
 
         /// <summary>
-        /// 
+        /// Constructs a new Motorhandler.
+        /// Only supports one motor for the moment.
         /// </summary>
-        /// <param name="noOfMotors"></param>
+        /// <param name="noOfMotors">Number of motors connected to the Servo</param>
         public MotorHandler(int noOfMotors)
         {
-            m_ServoController = new AdvancedServo();
-            m_ServoController.PositionChange += new PositionChangeEventHandler(advServo_PositionChange);
-
-
-            m_Servos = new AdvancedServoServo[noOfMotors];
+            servoController = new AdvancedServo();
+            servoController.PositionChange += new PositionChangeEventHandler(advServo_PositionChange);
+            servoMotor = new AdvancedServoServo[noOfMotors];
 
         }
 
@@ -49,11 +41,11 @@ namespace SmartDoor
 
         public void SetEngaged(bool status)
         {
-            m_Servos[0].Engaged = status;
+            servoMotor[0].Engaged = status;
         }
 
         /// <summary>
-        /// 
+        /// Attach handler, TODO: Handle this later on.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -65,65 +57,82 @@ namespace SmartDoor
         }
 
         /// <summary>
-        /// 
+        /// Handles shutdown of the Servo and motor
+        /// by closing the Servo stream and setting the motors
+        /// engaged status to false.
+        /// </summary>
+        public void shutDown()
+        {
+            servoMotor[0].Engaged = false;
+            servoController.close();
+        }
+
+        /// <summary>
+        /// Detach handler, TODO: Handle this later on.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void advServo_Detach(object sender, DetachEventArgs e)
         {
-                 
+            //TOOD: Handle detach event.
+           
         }
 
+        /// <summary>
+        /// Waits for the motor to be attached. Must wait 
+        /// </summary>
         public void waitForAttach()
         {
             try
             {
-                Console.WriteLine("Waiting for attachment...");
+                Console.Out.WriteLine("Waiting for attachment...");
 
-                m_ServoController.open();
+                servoController.open();
 
-                m_ServoController.waitForAttachment();
+                servoController.waitForAttachment();
 
-                m_Servos[0] = m_ServoController.servos[0];
+                servoMotor[0] = servoController.servos[0];
 
-                Console.WriteLine("Done waiting for attachment!");
+                Console.Out.WriteLine("Done waiting for attachment!");
 
             }
             catch (PhidgetException e) {
-                Console.Out.WriteLine(e.Description);
-                // System.exit(-1);
+                Console.Error.WriteLine("A fatal error occured: ");
+                Console.Error.WriteLine(e.Description);
+                servoController.close();
+                Environment.Exit(-1);
             }
         }
 
         /// <summary>
-        /// 
+        /// Unlocks the door by turning to <code>DOOR_UNLOCKED</code> degrees.
         /// </summary>
         public void Unlock()
         {
-            Console.WriteLine("Unlocking door");
-            m_Servos[0].Position = DOOR_UNLOCKED;
+            Console.Out.WriteLine("Unlocking door");
+            servoMotor[0].Position = DOOR_UNLOCKED;
             targetPosition = DOOR_UNLOCKED;
-            m_Servos[0].Engaged = true;
+            servoMotor[0].Engaged = true;
             
             while(currentPosition != targetPosition)
             {
-                m_Servos[0].Engaged = true;
+                servoMotor[0].Engaged = true;
             }
         }
 
         /// <summary>
-        /// 
+        /// Locks the door by turning to <code>DOOR_LOCKED</code> degrees.
         /// </summary>
         public void Lock()
         {
-            Console.WriteLine("Locking door");
+            Console.Out.WriteLine("Locking door");
             targetPosition = DOOR_LOCKED;
-            m_Servos[0].Position = DOOR_LOCKED;
-            m_Servos[0].Engaged = true;
+            servoMotor[0].Position = DOOR_LOCKED;
+            servoMotor[0].Engaged = true;
 
             while (currentPosition != targetPosition)
             {
-                m_Servos[0].Engaged = true;
+                servoMotor[0].Engaged = true;
             }
         }
 
