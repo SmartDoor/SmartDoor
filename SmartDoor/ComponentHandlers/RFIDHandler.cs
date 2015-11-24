@@ -7,7 +7,7 @@ using SmartDoor.ComponentHandlers;
 
 namespace SmartDoor
 {
-    class RFIDHandler : IObservable<Package>
+    class RFIDHandler : IObservable<Package>, Component
     {
         private RFID rfidReader;
 
@@ -34,7 +34,7 @@ namespace SmartDoor
         /// <summary>
         /// 
         /// </summary>
-        public void waitForAttach()
+        public void WaitForAttach()
         {
             try
             {
@@ -55,7 +55,7 @@ namespace SmartDoor
                 Console.Error.WriteLine(ex.Message);
                 Console.Error.WriteLine(ex.Description);
 
-                ShutDown();
+                Shutdown();
                 Environment.Exit(-1);
             }
           
@@ -66,7 +66,7 @@ namespace SmartDoor
         /// <summary>
         /// 
         /// </summary>
-        public void ShutDown()
+        public void Shutdown()
         {
             //turn off the led
             rfidReader.LED = false;

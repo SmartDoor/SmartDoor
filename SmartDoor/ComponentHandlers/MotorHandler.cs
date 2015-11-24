@@ -6,7 +6,7 @@ using SmartDoor.ComponentHandlers;
 
 namespace SmartDoor
 {
-    class MotorHandler : IObservable<Package>
+    class MotorHandler : IObservable<Package>, Component
     {
         private static double DOOR_LOCKED = 210;
         private static double DOOR_UNLOCKED = 30;
@@ -66,7 +66,7 @@ namespace SmartDoor
         /// by closing the Servo stream and setting the motors
         /// engaged status to false.
         /// </summary>
-        public void shutDown()
+        public void Shutdown()
         {
             servoMotor[0].Engaged = false;
             servoController.close();
@@ -86,7 +86,7 @@ namespace SmartDoor
         /// <summary>
         /// Waits for the motor to be attached. Must wait 
         /// </summary>
-        public void waitForAttach()
+        public void WaitForAttach()
         {
             try
             {
@@ -123,6 +123,10 @@ namespace SmartDoor
             {
                 servoMotor[0].Engaged = true;
             }
+
+            Package package = new Package(packageType.motorPackageUnlocked, "unlocked");
+            foreach (var observer in observers)
+                observer.OnNext(package);
         }
 
         /// <summary>
@@ -139,6 +143,11 @@ namespace SmartDoor
             {
                 servoMotor[0].Engaged = true;
             }
+
+            Package package = new Package(packageType.motorPackageLocked, "locked");
+            foreach (var observer in observers)
+                observer.OnNext(package);
+
         }
 
         public IDisposable Subscribe(IObserver<Package> observer)
