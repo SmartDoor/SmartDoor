@@ -1,10 +1,12 @@
 ﻿using System;
 using Phidgets;
 using Phidgets.Events;
+using System.Collections.Generic;
+using SmartDoor.ComponentHandlers;
 
 namespace SmartDoor
 {
-    class MotorHandler
+    class MotorHandler : IObservable<Package>
     {
         private static double DOOR_LOCKED = 210;
         private static double DOOR_UNLOCKED = 30;
@@ -14,6 +16,7 @@ namespace SmartDoor
 
         private double targetPosition;
         private double currentPosition;
+        private List<IObserver<Package>> observers;
 
         /// <summary>
         /// Constructs a new Motorhandler.
@@ -25,6 +28,8 @@ namespace SmartDoor
             servoController = new AdvancedServo();
             servoController.PositionChange += new PositionChangeEventHandler(advServo_PositionChange);
             servoMotor = new AdvancedServoServo[noOfMotors];
+
+            observers = new List<IObserver<Package>>();
 
         }
 
@@ -136,5 +141,14 @@ namespace SmartDoor
             }
         }
 
+        public IDisposable Subscribe(IObserver<Package> observer)
+        {
+            // Check whether observer is already registered. If not, add it
+            if (!observers.Contains(observer))
+            {
+                observers.Add(observer);
+            }
+            return new Unsubscriber<Package>(observers, observer);
+        }
     }
 }

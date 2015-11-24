@@ -1,0 +1,120 @@
+﻿using System;
+using Phidgets;
+using Phidgets.Events;
+
+using System.Collections.Generic;
+using SmartDoor.ComponentHandlers;
+
+namespace SmartDoor
+{
+    class RFIDHandler : IObservable<Package>
+    {
+        private RFID rfidReader;
+
+        private List<IObserver<Package>> observers;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public RFIDHandler()
+        {
+            rfidReader = new RFID();
+
+            //initialize our Phidgets RFID reader and hook the event handlers
+            rfidReader.Attach += new AttachEventHandler(rfid_Attach);
+            rfidReader.Detach += new DetachEventHandler(rfid_Detach);
+            rfidReader.Error += new ErrorEventHandler(rfid_Error);
+
+            rfidReader.Tag += new TagEventHandler(rfid_Tag);
+            rfidReader.TagLost += new TagEventHandler(rfid_TagLost);
+
+            observers = new List<IObserver<Package>>();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void waitForAttach()
+        {
+            try
+            {
+                rfidReader.open();
+
+                //Wait for a Phidget RFID to be attached before doing anything with 
+                //the object
+                Console.WriteLine("RFID: waiting for attachment...");
+                rfidReader.waitForAttachment();
+
+                //turn on the antenna and the led to show everything is working
+                rfidReader.Antenna = true;
+                rfidReader.LED = true;
+            }catch(PhidgetException ex)
+            {
+
+                Console.WriteLine("A fatal error has occured:");
+                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine(ex.Description);
+
+                ShutDown();
+                Environment.Exit(-1);
+            }
+          
+
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public void ShutDown()
+        {
+            //turn off the led
+            rfidReader.LED = false;
+
+            //close the phidget and dispose of the object
+            rfidReader.close();
+        }
+
+        private void rfid_TagLost(object sender, TagEventArgs e)
+        {
+            Console.WriteLine("LOST A TAG :( " + e.Tag);
+            Package package = new Package(packageType.RfidPackageLost,e.Tag);
+            foreach (var observer in observers)
+                observer.OnNext(package);
+        }
+
+        private void rfid_Tag(object sender, TagEventArgs e)
+        {
+            Console.WriteLine("FOUND A TAG :D " +e.Tag);
+            Package package = new Package(packageType.RfidPackageFound, e.Tag);
+            foreach (var observer in observers)
+                observer.OnNext(package);
+
+        }
+
+        private void rfid_Error(object sender, ErrorEventArgs e)
+        {
+            Console.WriteLine("RfidReader an error has occured");
+        }
+
+        private void rfid_Detach(object sender, DetachEventArgs e)
+        {
+            Console.WriteLine("RfidReader detached");
+        }
+
+        private void rfid_Attach(object sender, AttachEventArgs e)
+        {
+            Console.WriteLine("RfidReader attached");
+        }
+
+        public IDisposable Subscribe(IObserver<Package> observer)
+        {
+            // Check whether observer is already registered. If not, add it
+            if (!observers.Contains(observer))
+            {
+                observers.Add(observer);
+            }
+            return new Unsubscriber<Package>(observers, observer);
+        }
+    }
+}

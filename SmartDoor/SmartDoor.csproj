@@ -47,9 +47,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MotorHandler.cs" />
+    <Compile Include="ComponentHandlers\Package.cs" />
+    <Compile Include="ComponentHandlers\MotorHandler.cs" />
+    <Compile Include="ComponentHandlers\Unsubscriber.cs" />
+    <Compile Include="Controllers\MasterController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ComponentHandlers\RFIDHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -19,9 +19,9 @@ namespace SmartDoor
         /// <param name="args">Not used by this program yet.</param>
         static void Main(string[] args)
         {
-            MotorHandler motorHandler = new MotorHandler(1);
+            MasterController controller = new MasterController();
+            controller.Setup();
 
-            motorHandler.waitForAttach();
 
             String input = "";
 
@@ -30,36 +30,10 @@ namespace SmartDoor
             {
                 Console.Out.Write("$ ");
                 input = Console.ReadLine();
-
-                switch (input)
-                {
-                    case "Lock":
-                        Console.WriteLine("Locking door");
-                        motorHandler.Lock();
-                        break;
-
-                    case "Unlock":
-                        Console.WriteLine("Unlocking door");
-                        motorHandler.Unlock();
-                        break;
-
-                    case "Disengage":
-                        Console.WriteLine("Disengage");
-                        motorHandler.SetEngaged(false);
-                        break;
-
-                    case "Engage":
-                        Console.WriteLine("Engaged");
-                        motorHandler.SetEngaged(true);
-                        break;
-
-                    default:
-                        Console.WriteLine("Unknown command");
-                        break;
-                }
+                
             }
             // Handle shutdown...
-            motorHandler.shutDown();
+            controller.Shutdown();
         }
     }
 }
