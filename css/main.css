@@ -10,3 +10,8 @@
   margin-right: 10px;
   margin-left: 10px;
 }
+
+.jumbotron {
+      background-image: url(../images/wood.png);
+
+}
