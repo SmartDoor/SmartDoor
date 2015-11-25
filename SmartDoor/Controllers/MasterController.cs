@@ -1,6 +1,7 @@
 ﻿using SmartDoor.ComponentHandlers;
 using System;
 using System.Timers;
+using SmartDoor.Controllers;
 
 namespace SmartDoor
 {
@@ -13,12 +14,16 @@ namespace SmartDoor
         private MotorHandler motorHandler;
         private InterfaceHandler interfaceHandler;
         private Timer aTimer;
+        private SecurityController secController;
 
-        public MasterController()
+        public MasterController(SecurityController secController)
         {
+            this.secController = secController;
+
             rfidHandler = new RFIDHandler();
             motorHandler = new MotorHandler(1);
             interfaceHandler = new InterfaceHandler();
+
             aTimer = new Timer(1000 * 5);
             aTimer.AutoReset = true;
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
@@ -69,12 +74,16 @@ namespace SmartDoor
                     break;
 
                 case packageType.RfidPackageFound:
-                    Console.Out.WriteLine("Controller: Found RFID TAG: " + value.message);
-                    motorHandler.Unlock();
-                        break;
+                    Console.Out.WriteLine("Controller: Found RFID TAG: " + value.message + " is secure " + secController.isSecureRFIDTag(value.message));
+
+                    if(secController.isSecureRFIDTag(value.message))
+                    {
+                        motorHandler.Unlock();
+                    }
+                    break;
 
                 case packageType.RfidPackageLost:
-                    Console.Out.WriteLine("Controller: LOST RFID TAG: " + value.message);
+                    Console.Out.WriteLine("Controller: LOST RFID TAG: " + value.message +" is secure " + secController.isSecureRFIDTag(value.message) );
                     aTimer.Start();
                     break;
 

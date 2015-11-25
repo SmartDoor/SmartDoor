@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartDoor.Controllers;
+using System;
 
 /// <summary>
 /// File: Program.cs
@@ -19,18 +20,38 @@ namespace SmartDoor
         /// <param name="args">Not used by this program yet.</param>
         static void Main(string[] args)
         {
-            MasterController controller = new MasterController();
+            SecurityController secController = new SecurityController();
+            secController.readSecureRFIDTags();
+            MasterController controller = new MasterController(secController);
             controller.Setup();
-
 
             String input = "";
 
             Console.WriteLine("Welcome to Door-CLI");
             while (!input.Equals("exit"))
             {
-                Console.Out.Write("$ ");
+                Console.Out.WriteAsync("$ ");
                 input = Console.ReadLine();
-                
+
+                switch (input)
+                {
+                    case "addtag":
+                        Console.Out.WriteAsync("Enter tag ID: ");
+                        String tagID = Console.ReadLine();
+                        secController.addTag(tagID);
+                        secController.writeSecureRFIDTags();
+
+                        Console.Out.WriteLineAsync("Added tag: " + tagID);
+                        break;
+
+                    case "removetag":
+                        secController.removeTag(Console.ReadLine());
+                        secController.writeSecureRFIDTags();
+                        break;
+                    default:
+                        break;
+                }
+
             }
             // Handle shutdown...
             controller.Shutdown();
