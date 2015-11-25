@@ -13,7 +13,7 @@ namespace SmartDoor.Utilities
     {
         public void WriteToFile(RFIDTags secureRFIDTags)
         {
-            Stream stream = File.Open("RFID.Secure", FileMode.Create);
+            FileStream stream = File.Create("RFID.Secure");
             BinaryFormatter bformatter = new BinaryFormatter();
 
             bformatter.Serialize(stream, secureRFIDTags);
@@ -26,7 +26,7 @@ namespace SmartDoor.Utilities
             RFIDTags secureRFIDTags = null;
 
             //Open the file written above and read values from it.
-            Stream stream = File.Open("RFID.Secure", FileMode.Open);
+            FileStream stream = File.Open("RFID.Secure", FileMode.Open);
             BinaryFormatter bformatter = new BinaryFormatter();
 
             secureRFIDTags = (RFIDTags)bformatter.Deserialize(stream);
