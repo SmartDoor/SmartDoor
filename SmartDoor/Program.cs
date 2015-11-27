@@ -22,39 +22,15 @@ namespace SmartDoor
         {
             SecurityController secController = new SecurityController();
             secController.readSecureRFIDTags();
-            MasterController controller = new MasterController(secController);
-            controller.Setup();
+            MasterController masterController = new MasterController(secController);
+            masterController.Setup();
 
-            String input = "";
+            AdminController AdminController = new AdminController(masterController, secController);
 
-            Console.WriteLine("Welcome to Door-CLI");
-            while (!input.Equals("exit"))
-            {
-                Console.Out.WriteAsync("$ ");
-                input = Console.ReadLine();
+            AdminController.AdminCLI();
 
-                switch (input)
-                {
-                    case "addtag":
-                        Console.Out.WriteAsync("Enter tag ID: ");
-                        String tagID = Console.ReadLine();
-                        secController.addTag(tagID);
-                        secController.writeSecureRFIDTags();
-
-                        Console.Out.WriteLineAsync("Added tag: " + tagID);
-                        break;
-
-                    case "removetag":
-                        secController.removeTag(Console.ReadLine());
-                        secController.writeSecureRFIDTags();
-                        break;
-                    default:
-                        break;
-                }
-
-            }
             // Handle shutdown...
-            controller.Shutdown();
+            masterController.Shutdown();
         }
     }
 }

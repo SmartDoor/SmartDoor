@@ -40,7 +40,8 @@ namespace SmartDoor
         /// <param name="current"></param>
         void advServo_PositionChange(object sender, PositionChangeEventArgs current)
         {
-            Console.WriteLine("Motor : CurrentPos : " + current.Position);
+            if (!isActive)
+                return;
 
             if (targetPosition == current.Position)
             {

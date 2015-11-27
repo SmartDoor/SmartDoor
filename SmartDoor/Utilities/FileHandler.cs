@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartDoor.Controllers;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using SmartDoor.Templates;
 
 namespace SmartDoor.Utilities
 {
@@ -30,7 +30,7 @@ namespace SmartDoor.Utilities
             BinaryFormatter bformatter = new BinaryFormatter();
 
             secureRFIDTags = (RFIDTags)bformatter.Deserialize(stream);
-            stream.Close();
+            //stream.Close();
 
             return secureRFIDTags;
         }

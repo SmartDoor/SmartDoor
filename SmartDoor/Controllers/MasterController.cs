@@ -10,9 +10,9 @@ namespace SmartDoor
     /// </summary>
     class MasterController : IObserver<Package>
     {
-        private RFIDHandler rfidHandler;
-        private MotorHandler motorHandler;
-        private InterfaceHandler interfaceHandler;
+        public RFIDHandler rfidHandler { get; }
+        public MotorHandler motorHandler { get; }
+        public InterfaceHandler interfaceHandler { get; } 
         private Timer aTimer;
         private SecurityController secController;
 
@@ -89,7 +89,10 @@ namespace SmartDoor
 
                 case packageType.RfidPackageLost:
                     Console.Out.WriteLine("RFIDHandler : " + (secController.isSecureRFIDTag(value.message) ? "Secure" : "Unknown") + " Tag lost [" + value.message + "]");
-                    aTimer.Start();
+                    if (secController.isSecureRFIDTag(value.message))
+                    {
+                        aTimer.Start();
+                    }
                     break;
 
                 default:

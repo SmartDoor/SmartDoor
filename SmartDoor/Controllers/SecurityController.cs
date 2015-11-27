@@ -1,4 +1,5 @@
-﻿using SmartDoor.Utilities;
+﻿using SmartDoor.Templates;
+using SmartDoor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -47,8 +48,16 @@ namespace SmartDoor.Controllers
         /// <param name="tag">Tag to be added.</param>
         public void addTag(String tag)
         {
-            secureRFIDTags.addRFIDTag(tag);
-           
+            Person owner = new Person();
+            Console.WriteLine("\n Tag [" + tag + "]");
+            Console.Write("Enter name of owner : ");
+            owner.name = Console.ReadLine();
+            Console.WriteLine("");
+            owner.email = owner.name + "@gmail.com";
+            owner.birthday = "2000-00-00";
+
+            secureRFIDTags.RegisterRFIDTag(tag,owner);
+            fileHandler.WriteToFile(secureRFIDTags);
         }
 
         /// <summary>
@@ -62,10 +71,31 @@ namespace SmartDoor.Controllers
         /// <summary>
         /// Removes an RFID tag from the allowed tags in memory.
         /// </summary>
-        /// <param name="v"></param>
-        public void removeTag(string v)
+        /// <param name="tag"></param>
+        public void removeTag(string tag)
         {
-            secureRFIDTags.deleteRFIDtag(v);
+            secureRFIDTags.DeleteRFIDtag(tag);
+            fileHandler.WriteToFile(secureRFIDTags);
+        }
+
+        /// <summary>
+        /// Removes an RFID tag from the allowed tags in memory.
+        /// </summary>
+        /// <param name="tag"></param>
+        public void removeTagOwner(string owner)
+        {
+            secureRFIDTags.DeleteOwner(owner);
+            fileHandler.WriteToFile(secureRFIDTags);
+        }
+
+
+        /// <summary>
+        /// Retrieves an tag
+        /// </summary>
+        /// <param name="tag"></param>
+        public Person retrieveTag(string tag)
+        {
+            return secureRFIDTags.getOwnerOfTag(tag);
         }
 
         /// <summary>
@@ -73,67 +103,9 @@ namespace SmartDoor.Controllers
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public Boolean isSecureRFIDTag(String tag)
+        public bool isSecureRFIDTag(String tag)
         {
-            foreach(String secureTag in secureRFIDTags.getRFIDTags())
-            {
-                if (secureTag.Equals(tag))
-                    return true;
-            }
-            return false;
-        }
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [Serializable]
-    class RFIDTags
-    {
-        private List<String> secureRFIDTags;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public RFIDTags()
-        {
-            secureRFIDTags = new List<String>();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="secureRFIDTags"></param>
-        public RFIDTags(List<String> secureRFIDTags)
-        {
-            this.secureRFIDTags = secureRFIDTags;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public List<String> getRFIDTags()
-        {
-            return secureRFIDTags;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="tag"></param>
-        public void addRFIDTag(String tag)
-        {
-            secureRFIDTags.Add(tag);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="tag"></param>
-        public void deleteRFIDtag(String tag)
-        {
-            secureRFIDTags.Remove(tag);
+            return secureRFIDTags.isTagRegistred(tag);
         }
     }
 }

@@ -52,11 +52,14 @@
     <Compile Include="ComponentHandlers\Package.cs" />
     <Compile Include="ComponentHandlers\MotorHandler.cs" />
     <Compile Include="ComponentHandlers\Unsubscriber.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\MasterController.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ComponentHandlers\RFIDHandler.cs" />
+    <Compile Include="Templates\Person.cs" />
+    <Compile Include="Templates\RFIDTags.cs" />
     <Compile Include="Utilities\FileHandler.cs" />
   </ItemGroup>
   <ItemGroup>
