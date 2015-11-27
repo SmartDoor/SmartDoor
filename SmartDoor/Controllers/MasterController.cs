@@ -61,41 +61,51 @@ namespace SmartDoor
            switch(value.type)
             {
                 case packageType.motorPackageLocked:
-                    Console.Out.WriteLine("Controller: Locked Door: " + value.message);
+                    Console.Out.WriteLine("MotorHandler : Door Locked " + value.message);
+
                     aTimer.Stop();
+
+                    /** interface */
                     interfaceHandler.GreenLED(false);
                     interfaceHandler.RedLED(true);
                     break;
 
                 case packageType.motorPackageUnlocked:
-                    Console.Out.WriteLine("Controller: Unlocked Door: " + value.message);
+                    Console.Out.WriteLine("MotorHandler : Door Unlocked " + value.message);
+
+                    /** interface */
                     interfaceHandler.GreenLED(true);
                     interfaceHandler.RedLED(false);
                     break;
 
                 case packageType.RfidPackageFound:
-                    Console.Out.WriteLine("Controller: Found RFID TAG: " + value.message + " is secure " + secController.isSecureRFIDTag(value.message));
+                    Console.Out.WriteLine("RFIDHandler : " + (secController.isSecureRFIDTag(value.message) ? "Secure" : "Unknown") + " Tag found [" +value.message +"]");
 
                     if(secController.isSecureRFIDTag(value.message))
                     {
-                        motorHandler.Unlock();
+                        motorHandler.UnlockDoor();
                     }
                     break;
 
                 case packageType.RfidPackageLost:
-                    Console.Out.WriteLine("Controller: LOST RFID TAG: " + value.message +" is secure " + secController.isSecureRFIDTag(value.message) );
+                    Console.Out.WriteLine("RFIDHandler : " + (secController.isSecureRFIDTag(value.message) ? "Secure" : "Unknown") + " Tag lost [" + value.message + "]");
                     aTimer.Start();
                     break;
 
                 default:
-                    throw new Exception("Unknown typeEnum.");                   
+                    throw new Exception("Unknown Package");                   
             }
         }
 
+        /// <summary>
+        /// Stops the timer for the event and locks the door.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            motorHandler.Lock();
-            aTimer.Enabled = false;
+            aTimer.Stop();
+            motorHandler.LockDoor();
         }
 
         /// <summary>

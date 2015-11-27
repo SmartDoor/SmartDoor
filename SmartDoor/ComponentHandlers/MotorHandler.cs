@@ -10,12 +10,12 @@ namespace SmartDoor
     {
         private static double DOOR_LOCKED = 210;
         private static double DOOR_UNLOCKED = 30;
+        private bool isActive = false;
 
         private AdvancedServo servoController;
         private AdvancedServoServo[] servoMotor;
 
         private double targetPosition;
-        private double currentPosition;
         private List<IObserver<Package>> observers;
 
         /// <summary>
@@ -37,11 +37,27 @@ namespace SmartDoor
         /// 
         /// </summary>
         /// <param name="sender"></param>
-        /// <param name="e"></param>
-        void advServo_PositionChange(object sender, PositionChangeEventArgs e)
+        /// <param name="current"></param>
+        void advServo_PositionChange(object sender, PositionChangeEventArgs current)
         {
-            Console.WriteLine("CurrPos : " + e.Position);
-            currentPosition = e.Position;
+            Console.WriteLine("Motor : CurrentPos : " + current.Position);
+
+            if (targetPosition == current.Position)
+            {
+                Console.WriteLine("Motor : Reached target position ");
+
+                Package package;
+                if (targetPosition == DOOR_UNLOCKED)
+                    package = new Package(packageType.motorPackageUnlocked, "unlocked");
+                else
+                    package = new Package(packageType.motorPackageLocked, "locked");
+
+                foreach (var observer in observers)
+                    observer.OnNext(package);
+
+                isActive = false;
+                SetEngaged(false);
+            }
         }
 
         public void SetEngaged(bool status)
@@ -58,7 +74,6 @@ namespace SmartDoor
         {
             AdvancedServo attached = (AdvancedServo)sender;
 
-           
         }
 
         /// <summary>
@@ -90,7 +105,7 @@ namespace SmartDoor
         {
             try
             {
-                Console.Out.WriteLine("Waiting for attachment...");
+                Console.Out.WriteLine("MotorHandler : Waiting for attachment...");
 
                 servoController.open();
 
@@ -98,56 +113,60 @@ namespace SmartDoor
 
                 servoMotor[0] = servoController.servos[0];
 
-                Console.Out.WriteLine("Done waiting for attachment!");
+                Console.Out.WriteLine("MotorHandler : Done waiting for attachment!");
 
             }
             catch (PhidgetException e) {
-                Console.Error.WriteLine("A fatal error occured: ");
+                Console.Error.WriteLine("MotorHandler : A fatal error occured: ");
                 Console.Error.WriteLine(e.Description);
                 servoController.close();
                 Environment.Exit(-1);
             }
+
+            /** Reset the motor */
+            this.LockDoor();
         }
 
         /// <summary>
         /// Unlocks the door by turning to <code>DOOR_UNLOCKED</code> degrees.
         /// </summary>
-        public void Unlock()
+        public void UnlockDoor()
         {
-            Console.Out.WriteLine("Unlocking door");
-            servoMotor[0].Position = DOOR_UNLOCKED;
-            targetPosition = DOOR_UNLOCKED;
-            servoMotor[0].Engaged = true;
-            
-            while(currentPosition != targetPosition)
-            {
-                servoMotor[0].Engaged = true;
-            }
+            if (isActive)
+                return;
+            else
+                isActive = true;
 
-            Package package = new Package(packageType.motorPackageUnlocked, "unlocked");
-            foreach (var observer in observers)
-                observer.OnNext(package);
+            Console.Out.WriteLine("MotorHandler : Unlocking Door");
+
+            /**change target */
+            targetPosition = DOOR_UNLOCKED;
+
+            /** Set motor variables */
+            servoMotor[0].Engaged = true;
+            servoMotor[0].Position = DOOR_UNLOCKED;
+
         }
 
         /// <summary>
         /// Locks the door by turning to <code>DOOR_LOCKED</code> degrees.
         /// </summary>
-        public void Lock()
+        public void LockDoor()
         {
-            Console.Out.WriteLine("Locking door");
+            /** if already active don't do anthing */
+            if (isActive)
+                return;
+            else
+                isActive = true;
+
+            Console.Out.WriteLine("MotorHandler : Locking Door");
+
+            /**changes target */
             targetPosition = DOOR_LOCKED;
-            servoMotor[0].Position = DOOR_LOCKED;
+
+            /** Set motor variables */
             servoMotor[0].Engaged = true;
-
-            while (currentPosition != targetPosition)
-            {
-                servoMotor[0].Engaged = true;
-            }
-
-            Package package = new Package(packageType.motorPackageLocked, "locked");
-            foreach (var observer in observers)
-                observer.OnNext(package);
-
+            servoMotor[0].Position = DOOR_LOCKED; 
         }
 
         public IDisposable Subscribe(IObserver<Package> observer)

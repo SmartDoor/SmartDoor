@@ -42,7 +42,7 @@ namespace SmartDoor
 
                 //Wait for a Phidget RFID to be attached before doing anything with 
                 //the object
-                Console.WriteLine("RFID: waiting for attachment...");
+                Console.WriteLine("RFIDHandler : waiting for attachment...");
                 rfidReader.waitForAttachment();
 
                 //turn on the antenna and the led to show everything is working
@@ -51,7 +51,7 @@ namespace SmartDoor
             }catch(PhidgetException ex)
             {
 
-                Console.WriteLine("A fatal error has occured:");
+                Console.WriteLine("RFIDHandler : A fatal error has occured:");
                 Console.Error.WriteLine(ex.Message);
                 Console.Error.WriteLine(ex.Description);
 
@@ -77,7 +77,6 @@ namespace SmartDoor
 
         private void rfid_TagLost(object sender, TagEventArgs e)
         {
-            Console.WriteLine("LOST A TAG :( " + e.Tag);
             Package package = new Package(packageType.RfidPackageLost,e.Tag);
             foreach (var observer in observers)
                 observer.OnNext(package);
@@ -85,7 +84,6 @@ namespace SmartDoor
 
         private void rfid_Tag(object sender, TagEventArgs e)
         {
-            Console.WriteLine("FOUND A TAG :D " +e.Tag);
             Package package = new Package(packageType.RfidPackageFound, e.Tag);
             foreach (var observer in observers)
                 observer.OnNext(package);
