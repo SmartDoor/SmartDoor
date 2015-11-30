@@ -13,5 +13,8 @@
 
 .jumbotron {
       background-image: url(../images/wood.png);
+}
 
+.img-circle {
+    background-color: lightblue;
 }
