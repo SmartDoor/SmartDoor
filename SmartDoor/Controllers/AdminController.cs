@@ -165,9 +165,11 @@ namespace SmartDoor.Controllers
                 Person owner = securityController.retrieveTag(value.message);
 
                 Console.WriteLine("\n[" + value.message + "]");
-                Console.WriteLine("Owner : " + (owner == null ? "unknown" :owner.name));
-                Console.WriteLine("Email : " + (owner == null ? "unknown" : owner.email));
-                Console.WriteLine("birthday : " + (owner == null ? "unknown" : owner.birthday + "\n\n"));
+                if (owner == null)
+                    Console.WriteLine(Person.UnkownToString());
+                else
+                    Console.WriteLine(owner.ToString());
+
                 wantToCheckTag = false;
             }
         }

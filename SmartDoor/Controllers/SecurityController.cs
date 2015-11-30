@@ -51,27 +51,21 @@ namespace SmartDoor.Controllers
             Person owner = new Person();
             Console.WriteLine("\n Tag [" + tag + "]");
             Console.Write("Enter name of owner : ");
+
             String input = "";
             input = Console.ReadLine();
+
             owner.name = input;
-            Console.WriteLine("Owner : " + owner.name);
             owner.email = owner.name + "@gmail.com";
-            Console.WriteLine(owner.email);
             owner.birthday = "2000-00-00";
+
+            Console.WriteLine(owner.ToString());
 
             if (secureRFIDTags.RegisterRFIDTag(tag, owner))
             {
-                Logger.Log("[ADD][" + tag + "] " + owner.name);
+                Logger.Log("[Registred][" + tag + "] " + owner.name);
                 fileHandler.WriteToFile(secureRFIDTags);
             }
-        }
-
-        /// <summary>
-        /// Saves the current allowed RFID tags into file.
-        /// </summary>
-        public void writeSecureRFIDTags()
-        {
-            fileHandler.WriteToFile(secureRFIDTags);
         }
 
         /// <summary>

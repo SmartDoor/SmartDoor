@@ -10,7 +10,7 @@ namespace SmartDoor.Utilities
     {
         static Logger instance;
         static bool debugMode = false;
-        static bool logMode = false;
+        static bool logMode = true;
 
         private Logger() { }
 
@@ -54,7 +54,15 @@ namespace SmartDoor.Utilities
         {
             if (logMode)
             {
-                Console.WriteLine("[Log] " + log);
+                Console.WriteLine(log);
+            }
+        }
+
+        public static void Err(String log)
+        {
+            if (logMode)
+            {
+                Console.Error.WriteLine(log);
             }
         }
 

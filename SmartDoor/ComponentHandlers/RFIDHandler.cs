@@ -4,6 +4,7 @@ using Phidgets.Events;
 
 using System.Collections.Generic;
 using SmartDoor.ComponentHandlers;
+using SmartDoor.Utilities;
 
 namespace SmartDoor
 {
@@ -92,17 +93,17 @@ namespace SmartDoor
 
         private void rfid_Error(object sender, ErrorEventArgs e)
         {
-            Console.WriteLine("RfidReader an error has occured");
+            Logger.DebugErr("RfidReader an error has occured");
         }
 
         private void rfid_Detach(object sender, DetachEventArgs e)
         {
-            Console.WriteLine("RfidReader detached");
+            Logger.DebugErr("RfidReader detached");
         }
 
         private void rfid_Attach(object sender, AttachEventArgs e)
         {
-            Console.WriteLine("RfidReader attached");
+            Logger.DebugErr("RfidReader attached");
         }
 
         public IDisposable Subscribe(IObserver<Package> observer)

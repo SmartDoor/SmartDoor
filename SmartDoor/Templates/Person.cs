@@ -12,5 +12,24 @@ namespace SmartDoor.Templates
         public String name;
         public String email;
         public String birthday;
+
+        override
+        public String ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Name : " + name + "\n");
+            sb.Append("Email : " + email + "\n");
+            sb.Append("Birthday : " + birthday + "\n");
+            return sb.ToString();
+        }
+
+        public static String UnkownToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("Name : " + "Unknown" + "\n");
+            sb.Append("Email : " + "Unknown" + "\n");
+            sb.Append("Birthday : " + "Unknown" + "\n");
+            return sb.ToString();
+        }
     }
 }

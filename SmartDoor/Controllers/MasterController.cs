@@ -2,6 +2,7 @@
 using System;
 using System.Timers;
 using SmartDoor.Controllers;
+using SmartDoor.Utilities;
 
 namespace SmartDoor
 {
@@ -61,34 +62,36 @@ namespace SmartDoor
            switch(value.type)
             {
                 case packageType.motorPackageLocked:
-                    Console.Out.WriteLine("MotorHandler : Door " + value.message);
+                    Logger.DebugLog("MotorHandler : Door " + value.message);
 
                     lockTimer.Stop();
 
-                    /** interface */
                     interfaceHandler.GreenLED(false);
                     interfaceHandler.RedLED(true);
                     break;
 
                 case packageType.motorPackageUnlocked:
-                    Console.Out.WriteLine("MotorHandler : Door " + value.message);
+                    Logger.DebugLog("MotorHandler : Door " + value.message);
 
-                    /** interface */
                     interfaceHandler.GreenLED(true);
                     interfaceHandler.RedLED(false);
                     break;
 
                 case packageType.RfidPackageFound:
-                    Console.Out.WriteLine("RFIDHandler : " + (secController.isSecureRFIDTag(value.message) ? "Secure" : "Unknown") + " Tag found [" +value.message +"]");
+                    Logger.DebugLog("RFIDHandler : " + (secController.isSecureRFIDTag(value.message) ? "Secure" : "Unknown") + " Tag found [" +value.message +"]");
 
                     if(secController.isSecureRFIDTag(value.message))
                     {
+                        Logger.Log("[" + value.message + "]" + " - " + secController.retrieveTag(value.message).name); 
                         motorHandler.UnlockDoor();
+                    } else
+                    {
+                        Logger.Log("[" + value.message + "]" + " - " + "Unknown");
                     }
                     break;
 
                 case packageType.RfidPackageLost:
-                    Console.Out.WriteLine("RFIDHandler : " + (secController.isSecureRFIDTag(value.message) ? "Secure" : "Unknown") + " Tag lost [" + value.message + "]");
+                    Logger.DebugLog("RFIDHandler : " + (secController.isSecureRFIDTag(value.message) ? "Secure" : "Unknown") + " Tag lost [" + value.message + "]");
                     if (secController.isSecureRFIDTag(value.message))
                     {
                         lockTimer.Start();

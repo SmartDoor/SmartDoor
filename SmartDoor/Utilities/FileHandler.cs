@@ -17,6 +17,7 @@ namespace SmartDoor.Utilities
         /// <param name="secureRFIDTags"></param>
         public void WriteToFile(RFIDTags secureRFIDTags)
         {
+            Logger.DebugLog("Updating file");
             FileStream stream = File.Create("RFID.Secure");
 
             BinaryFormatter bformatter = new BinaryFormatter();
@@ -31,6 +32,7 @@ namespace SmartDoor.Utilities
         /// <returns></returns>
         public RFIDTags ReadFile()
         {
+            Logger.DebugLog("Trying to read file");
             RFIDTags secureRFIDTags = null;
 
             //Open the file written above and read values from it.

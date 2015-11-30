@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SmartDoor.Utilities;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -54,10 +55,10 @@ namespace SmartDoor.Templates
         {
             if (!secureRFIDTags.TryAdd(tag, owner))
             {
-                Console.Error.WriteLine("Tag already exists, use updatetag");
+                Logger.Err("Error, Tag already exists");
             } else
             {
-                Console.WriteLine("Success, tag is now registred");
+                Logger.Err("Success, Tag is now registred");
                 return true;
             }
             return false;
@@ -74,15 +75,15 @@ namespace SmartDoor.Templates
             {
                 if (!secureRFIDTags.TryUpdate(tag, owner, lastOwner))
                 {
-                    Console.Error.WriteLine("Error,Could not update tag");
+                    Logger.Err("Error, Could not update tag");
                 } else
                 {
-                    Console.WriteLine("Success, tag is now registred");
+                    Logger.Log("Success, Tag is now registred");
                     return true;
                 }
             } else
             {
-                Console.Error.WriteLine("Error, Tag is not registred");
+                Logger.Err("Error, Tag is not registred");
             }
             return false;
         }
@@ -96,16 +97,16 @@ namespace SmartDoor.Templates
             Person lastOwner;
             if (!secureRFIDTags.TryRemove(tag, out lastOwner))
             {
-                Console.Error.WriteLine("Error,Could not remove tag");
+                Logger.Err("Error, Could not remove tag" );
             }
             else
             {
                 if (lastOwner == null)
                 {
-                    Console.Error.WriteLine("Error, Tag is not registred");
+                    Logger.Err("Error, Tag is not registred");
                 } else
                 {
-                    Console.WriteLine("Success, Tag is now removed");
+                    Logger.Log("Success, Tag is now removed");
                     return true;
                 }
             }
@@ -125,17 +126,17 @@ namespace SmartDoor.Templates
                     Person lastOwner;
                     if(!secureRFIDTags.TryRemove(key,out lastOwner))
                     {
-                        Console.Error.WriteLine("Error, Could not remove tag");
-                    } else if (lastOwner == null)
+                        Logger.Log("Error, Could not remove tag owner");
+                    }  else
                     {
-                        Console.Error.WriteLine("Error, Tag is not registred");
-                    } else
-                    {
-                        Console.WriteLine("Success, Tag is now removed");
+                        Logger.Log("Success, Tag is now removed from ");
                         return true;
                     }
                 }
             }
+
+            Logger.Log("Error, No Tag is not registred to ");
+
             return false;
         }
     }
