@@ -14,9 +14,10 @@ namespace SmartDoor.Utilities
         public void WriteToFile(RFIDTags secureRFIDTags)
         {
             FileStream stream = File.Create("RFID.Secure");
-            BinaryFormatter bformatter = new BinaryFormatter();
 
+            BinaryFormatter bformatter = new BinaryFormatter();
             bformatter.Serialize(stream, secureRFIDTags);
+
             stream.Close();
         }
 
@@ -30,7 +31,7 @@ namespace SmartDoor.Utilities
             BinaryFormatter bformatter = new BinaryFormatter();
 
             secureRFIDTags = (RFIDTags)bformatter.Deserialize(stream);
-            //stream.Close();
+            stream.Close();
 
             return secureRFIDTags;
         }

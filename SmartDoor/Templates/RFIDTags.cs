@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,32 +13,14 @@ namespace SmartDoor.Templates
     [Serializable]
     class RFIDTags
     {
-        private Dictionary<String,Person> secureRFIDTags;
+        private ConcurrentDictionary<String,Person> secureRFIDTags;
 
         /// <summary>
         /// 
         /// </summary>
         public RFIDTags()
         {
-            secureRFIDTags = new Dictionary<String, Person>();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="secureRFIDTags"></param>
-        public RFIDTags(Dictionary<String, Person> secureRFIDTags)
-        {
-            this.secureRFIDTags = secureRFIDTags;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public Dictionary<String, Person> getRFIDTags()
-        {
-            return secureRFIDTags;
+            secureRFIDTags = new ConcurrentDictionary<String, Person>();
         }
 
         /// <summary>
@@ -47,12 +30,8 @@ namespace SmartDoor.Templates
         /// <returns></returns>
         public bool isTagRegistred(String tag)
         {
-            try
-            {
-                return secureRFIDTags[tag] != null ? true : false;
-            }
-            catch (KeyNotFoundException e){ }
-            return false;
+            Person owner;
+            return secureRFIDTags.TryGetValue(tag,out owner);
         }
 
         /// <summary>
@@ -62,31 +41,50 @@ namespace SmartDoor.Templates
         /// <returns></returns>
         public Person getOwnerOfTag(String tag)
         {
-            try
-            {
-                return secureRFIDTags[tag];
-            }
-            catch (KeyNotFoundException e) { }
-
-            return null;
+            Person owner;
+            secureRFIDTags.TryGetValue(tag, out owner);
+            return owner;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="tag"></param>
-        public void RegisterRFIDTag(String tag,Person owner)
+        public bool RegisterRFIDTag(String tag,Person owner)
         {
-            try
+            if (!secureRFIDTags.TryAdd(tag, owner))
             {
-                /** try add */
-                secureRFIDTags.Add(tag, owner);
-            }
-            catch (ArgumentException e)
+                Console.Error.WriteLine("Tag already exists, use updatetag");
+            } else
             {
-                /** Replace existing */
-                secureRFIDTags[tag] = owner;
+                Console.WriteLine("Success, tag is now registred");
+                return true;
             }
+            return false;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tag"></param>
+        public bool UpdateRFIDTag(String tag, Person owner)
+        {
+            Person lastOwner;
+            if(secureRFIDTags.TryGetValue(tag, out lastOwner))
+            {
+                if (!secureRFIDTags.TryUpdate(tag, owner, lastOwner))
+                {
+                    Console.Error.WriteLine("Error,Could not update tag");
+                } else
+                {
+                    Console.WriteLine("Success, tag is now registred");
+                    return true;
+                }
+            } else
+            {
+                Console.Error.WriteLine("Error, Tag is not registred");
+            }
+            return false;
         }
 
         /// <summary>
@@ -95,15 +93,23 @@ namespace SmartDoor.Templates
         /// <param name="tag"></param>
         public bool DeleteRFIDtag(String tag)
         {
-            try
+            Person lastOwner;
+            if (!secureRFIDTags.TryRemove(tag, out lastOwner))
             {
-                secureRFIDTags.Remove(tag);
-            } catch (KeyNotFoundException e)
-            {
-                return false;
+                Console.Error.WriteLine("Error,Could not remove tag");
             }
-
-            return true;
+            else
+            {
+                if (lastOwner == null)
+                {
+                    Console.Error.WriteLine("Error, Tag is not registred");
+                } else
+                {
+                    Console.WriteLine("Success, Tag is now removed");
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -116,12 +122,21 @@ namespace SmartDoor.Templates
             {
                 if(secureRFIDTags[key].name == name)
                 {
-                    secureRFIDTags.Remove(key);
-                    return true;
+                    Person lastOwner;
+                    if(!secureRFIDTags.TryRemove(key,out lastOwner))
+                    {
+                        Console.Error.WriteLine("Error, Could not remove tag");
+                    } else if (lastOwner == null)
+                    {
+                        Console.Error.WriteLine("Error, Tag is not registred");
+                    } else
+                    {
+                        Console.WriteLine("Success, Tag is now removed");
+                        return true;
+                    }
                 }
             }
             return false;
         }
-
     }
 }

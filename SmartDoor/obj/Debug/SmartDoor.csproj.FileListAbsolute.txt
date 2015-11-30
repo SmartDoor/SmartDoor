@@ -1,7 +1,6 @@
 c:\users\ubiq\documents\visual studio 2015\Projects\SmartDoor\SmartDoor\bin\Debug\SmartDoor.exe.config
 c:\users\ubiq\documents\visual studio 2015\Projects\SmartDoor\SmartDoor\bin\Debug\SmartDoor.exe
 c:\users\ubiq\documents\visual studio 2015\Projects\SmartDoor\SmartDoor\bin\Debug\SmartDoor.pdb
-c:\users\ubiq\documents\visual studio 2015\Projects\SmartDoor\SmartDoor\obj\Debug\SmartDoor.csprojResolveAssemblyReference.cache
 c:\users\ubiq\documents\visual studio 2015\Projects\SmartDoor\SmartDoor\obj\Debug\SmartDoor.exe
 c:\users\ubiq\documents\visual studio 2015\Projects\SmartDoor\SmartDoor\obj\Debug\SmartDoor.pdb
 c:\users\ubiq\documents\visual studio 2015\Projects\SmartDoor\SmartDoor\bin\Debug\Phidget21.NET.dll

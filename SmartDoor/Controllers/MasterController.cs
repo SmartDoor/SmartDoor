@@ -8,12 +8,12 @@ namespace SmartDoor
     /// <summary>
     /// The Master Controller of the program. Will handle communication between our different devices.
     /// </summary>
-    class MasterController : IObserver<Package>
+    class MasterController : IObserver<Package>, IDisposable
     {
         public RFIDHandler rfidHandler { get; }
         public MotorHandler motorHandler { get; }
         public InterfaceHandler interfaceHandler { get; } 
-        private Timer aTimer;
+        private Timer lockTimer;
         private SecurityController secController;
 
         public MasterController(SecurityController secController)
@@ -24,9 +24,9 @@ namespace SmartDoor
             motorHandler = new MotorHandler(1);
             interfaceHandler = new InterfaceHandler();
 
-            aTimer = new Timer(1000 * 5);
-            aTimer.AutoReset = true;
-            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            lockTimer = new Timer(1000 * 5);
+            lockTimer.AutoReset = true;
+            lockTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace SmartDoor
                 case packageType.motorPackageLocked:
                     Console.Out.WriteLine("MotorHandler : Door Locked " + value.message);
 
-                    aTimer.Stop();
+                    lockTimer.Stop();
 
                     /** interface */
                     interfaceHandler.GreenLED(false);
@@ -91,7 +91,7 @@ namespace SmartDoor
                     Console.Out.WriteLine("RFIDHandler : " + (secController.isSecureRFIDTag(value.message) ? "Secure" : "Unknown") + " Tag lost [" + value.message + "]");
                     if (secController.isSecureRFIDTag(value.message))
                     {
-                        aTimer.Start();
+                        lockTimer.Start();
                     }
                     break;
 
@@ -107,7 +107,7 @@ namespace SmartDoor
         /// <param name="e"></param>
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            aTimer.Stop();
+            lockTimer.Stop();
             motorHandler.LockDoor();
         }
 
@@ -126,6 +126,11 @@ namespace SmartDoor
         public void OnCompleted()
         {
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            lockTimer.Dispose();
         }
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SmartDoor.Controllers
@@ -39,32 +40,49 @@ namespace SmartDoor.Controllers
             Console.WriteLine("Welcome to Door-CLI");
             while (!input.Equals("exit"))
             {
-                Console.Out.WriteAsync("$ ");
-                input = Console.ReadLine();
-
-                switch (input)
+                if (!isBusy())
                 {
-                    case "addtag":
-                        wantToAddTag = true;
-                        break;
-                    case "removetag":
-                        wantToRemoveTag = true;
-                        break;
-                    case "removeowner":
-                        wantToRemoveOwner = true;
-                        break;
-                    case "changeOwner":
-                        wantToChangeOwner = true;
-                        break;
-                    case "checktag":
-                        wantToCheckTag = true;
-                        break;
-                    default:
-                        break;
-                }
+                    Console.Out.WriteAsync("$ ");
+                    input = Console.ReadLine();
 
+                    switch (input)
+                    {
+                        case "addtag":
+                            wantToAddTag = true;
+                            break;
+                        case "removetag":
+                            wantToRemoveTag = true;
+                            break;
+                        case "removeowner":
+                            wantToRemoveOwner = true;
+                            break;
+                        case "changeOwner":
+                            wantToChangeOwner = true;
+                            break;
+                        case "checktag":
+                            wantToCheckTag = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                Thread.Sleep(20);
             }
 
+        }
+
+        public bool isBusy()
+        {
+            if (wantToAddTag ||
+                wantToRemoveTag ||
+                wantToRemoveOwner ||
+                wantToChangeOwner ||
+                wantToCheckTag)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -51,13 +51,18 @@ namespace SmartDoor.Controllers
             Person owner = new Person();
             Console.WriteLine("\n Tag [" + tag + "]");
             Console.Write("Enter name of owner : ");
-            owner.name = Console.ReadLine();
-            Console.WriteLine("");
+            String input = "";
+            input = Console.ReadLine();
+            owner.name = input;
+            Console.WriteLine("Owner : " + owner.name);
             owner.email = owner.name + "@gmail.com";
+            Console.WriteLine(owner.email);
             owner.birthday = "2000-00-00";
 
-            secureRFIDTags.RegisterRFIDTag(tag,owner);
-            fileHandler.WriteToFile(secureRFIDTags);
+            if (secureRFIDTags.RegisterRFIDTag(tag, owner))
+            {
+                fileHandler.WriteToFile(secureRFIDTags);
+            }
         }
 
         /// <summary>
@@ -74,8 +79,10 @@ namespace SmartDoor.Controllers
         /// <param name="tag"></param>
         public void removeTag(string tag)
         {
-            secureRFIDTags.DeleteRFIDtag(tag);
-            fileHandler.WriteToFile(secureRFIDTags);
+            if (secureRFIDTags.DeleteRFIDtag(tag))
+            {
+                fileHandler.WriteToFile(secureRFIDTags);
+            }
         }
 
         /// <summary>
@@ -84,8 +91,10 @@ namespace SmartDoor.Controllers
         /// <param name="tag"></param>
         public void removeTagOwner(string owner)
         {
-            secureRFIDTags.DeleteOwner(owner);
-            fileHandler.WriteToFile(secureRFIDTags);
+            if (secureRFIDTags.DeleteOwner(owner))
+            {
+                fileHandler.WriteToFile(secureRFIDTags);
+            }
         }
 
 
