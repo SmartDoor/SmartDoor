@@ -61,7 +61,7 @@ namespace SmartDoor
            switch(value.type)
             {
                 case packageType.motorPackageLocked:
-                    Console.Out.WriteLine("MotorHandler : Door Locked " + value.message);
+                    Console.Out.WriteLine("MotorHandler : Door " + value.message);
 
                     lockTimer.Stop();
 
@@ -71,7 +71,7 @@ namespace SmartDoor
                     break;
 
                 case packageType.motorPackageUnlocked:
-                    Console.Out.WriteLine("MotorHandler : Door Unlocked " + value.message);
+                    Console.Out.WriteLine("MotorHandler : Door " + value.message);
 
                     /** interface */
                     interfaceHandler.GreenLED(true);

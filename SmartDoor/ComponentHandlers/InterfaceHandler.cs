@@ -33,12 +33,25 @@ namespace SmartDoor.ComponentHandlers
         /// </summary>
         public void WaitForAttach()
         {
-            Console.Out.WriteLine("Interface: Waiting for attachment...");
+            try
+            {
+                Console.Out.WriteLine("InterfaceKit: Waiting for attachment...");
+                interfaceKit.open();
+                interfaceKit.waitForAttachment();
+            }
+            catch (PhidgetException e) {
+                Console.Error.WriteLine("InterfaceKit : A fatal error occured: ");
+                Console.Error.WriteLine(e.Description);
+                Environment.Exit(-1);
+            }
 
-            interfaceKit.open();
-            interfaceKit.waitForAttachment();
 
-            Console.Out.WriteLine("Interface attached... OK!");
+            Console.Out.WriteLine("InterfaceKit : Done waiting for attachment!");
+
+            GreenLED(false);
+            YellowLED(false);
+            RedLED(false);
+
         }
 
         /// <summary>

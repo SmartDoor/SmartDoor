@@ -1,5 +1,6 @@
 ﻿using SmartDoor.ComponentHandlers;
 using SmartDoor.Templates;
+using SmartDoor.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace SmartDoor.Controllers
     class AdminController : IObserver<Package>
     {
         private SecurityController securityController;
+        private Logger debugger = Logger.GetInstance();
 
         /** options */
         private bool wantToAddTag;
@@ -62,6 +64,13 @@ namespace SmartDoor.Controllers
                         case "checktag":
                             wantToCheckTag = true;
                             break;
+                        case "debug":
+                            debugger.ToggleDebugMode();
+                            break;
+                        case "log":
+                            debugger.ToggleLogMode();
+                            break;
+
                         default:
                             break;
                     }
@@ -155,10 +164,10 @@ namespace SmartDoor.Controllers
             {
                 Person owner = securityController.retrieveTag(value.message);
 
-                Console.WriteLine("[" + value.message + "]");
+                Console.WriteLine("\n[" + value.message + "]");
                 Console.WriteLine("Owner : " + (owner == null ? "unknown" :owner.name));
                 Console.WriteLine("Email : " + (owner == null ? "unknown" : owner.email));
-                Console.WriteLine("birthday : " + (owner == null ? "unknown" : owner.birthday + "\n"));
+                Console.WriteLine("birthday : " + (owner == null ? "unknown" : owner.birthday + "\n\n"));
                 wantToCheckTag = false;
             }
         }

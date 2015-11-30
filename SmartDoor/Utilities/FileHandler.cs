@@ -11,6 +11,10 @@ namespace SmartDoor.Utilities
 {
     class FileHandler
     {
+        /// <summary>
+        /// Writes a serializable class to a file
+        /// </summary>
+        /// <param name="secureRFIDTags"></param>
         public void WriteToFile(RFIDTags secureRFIDTags)
         {
             FileStream stream = File.Create("RFID.Secure");
@@ -21,7 +25,10 @@ namespace SmartDoor.Utilities
             stream.Close();
         }
 
-
+        /// <summary>
+        /// Read a file that contains a serialized object
+        /// </summary>
+        /// <returns></returns>
         public RFIDTags ReadFile()
         {
             RFIDTags secureRFIDTags = null;

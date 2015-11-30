@@ -60,6 +60,7 @@
     <Compile Include="ComponentHandlers\RFIDHandler.cs" />
     <Compile Include="Templates\Person.cs" />
     <Compile Include="Templates\RFIDTags.cs" />
+    <Compile Include="Utilities\Debugger.cs" />
     <Compile Include="Utilities\FileHandler.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -61,6 +61,7 @@ namespace SmartDoor.Controllers
 
             if (secureRFIDTags.RegisterRFIDTag(tag, owner))
             {
+                Logger.Log("[ADD][" + tag + "] " + owner.name);
                 fileHandler.WriteToFile(secureRFIDTags);
             }
         }
@@ -81,6 +82,7 @@ namespace SmartDoor.Controllers
         {
             if (secureRFIDTags.DeleteRFIDtag(tag))
             {
+                Logger.Log("[Removed][" + tag + "]");
                 fileHandler.WriteToFile(secureRFIDTags);
             }
         }
@@ -93,6 +95,7 @@ namespace SmartDoor.Controllers
         {
             if (secureRFIDTags.DeleteOwner(owner))
             {
+                Logger.Log("[Removed] " + owner);
                 fileHandler.WriteToFile(secureRFIDTags);
             }
         }

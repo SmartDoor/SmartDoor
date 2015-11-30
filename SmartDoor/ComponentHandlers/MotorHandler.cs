@@ -3,6 +3,7 @@ using Phidgets;
 using Phidgets.Events;
 using System.Collections.Generic;
 using SmartDoor.ComponentHandlers;
+using SmartDoor.Utilities;
 
 namespace SmartDoor
 {
@@ -45,7 +46,7 @@ namespace SmartDoor
 
             if (targetPosition == current.Position)
             {
-                Console.WriteLine("Motor : Reached target position ");
+                Logger.DebugLog("Motor : Reached target position ");
 
                 Package package;
                 if (targetPosition == DOOR_UNLOCKED)
@@ -111,11 +112,6 @@ namespace SmartDoor
                 servoController.open();
 
                 servoController.waitForAttachment();
-
-                servoMotor[0] = servoController.servos[0];
-
-                Console.Out.WriteLine("MotorHandler : Done waiting for attachment!");
-
             }
             catch (PhidgetException e) {
                 Console.Error.WriteLine("MotorHandler : A fatal error occured: ");
@@ -123,6 +119,10 @@ namespace SmartDoor
                 servoController.close();
                 Environment.Exit(-1);
             }
+
+            Console.Out.WriteLine("MotorHandler : Done waiting for attachment!");
+
+            servoMotor[0] = servoController.servos[0];
 
             /** Reset the motor */
             this.LockDoor();
@@ -138,7 +138,7 @@ namespace SmartDoor
             else
                 isActive = true;
 
-            Console.Out.WriteLine("MotorHandler : Unlocking Door");
+            Logger.DebugLog("MotorHandler : Unlocking Door");
 
             /**change target */
             targetPosition = DOOR_UNLOCKED;
@@ -160,7 +160,7 @@ namespace SmartDoor
             else
                 isActive = true;
 
-            Console.Out.WriteLine("MotorHandler : Locking Door");
+            Logger.DebugLog("MotorHandler : Locking Door");
 
             /**changes target */
             targetPosition = DOOR_LOCKED;

@@ -44,11 +44,8 @@ namespace SmartDoor
                 //the object
                 Console.WriteLine("RFIDHandler : waiting for attachment...");
                 rfidReader.waitForAttachment();
-
-                //turn on the antenna and the led to show everything is working
-                rfidReader.Antenna = true;
-                rfidReader.LED = true;
-            }catch(PhidgetException ex)
+            }
+            catch(PhidgetException ex)
             {
 
                 Console.WriteLine("RFIDHandler : A fatal error has occured:");
@@ -58,9 +55,12 @@ namespace SmartDoor
                 Shutdown();
                 Environment.Exit(-1);
             }
-          
 
+            //turn on the antenna and the led to show everything is working
+            rfidReader.Antenna = true;
+            rfidReader.LED = true;
 
+            Console.Out.WriteLine("RFIDHandler : Done waiting for attachment!");
         }
 
         /// <summary>
