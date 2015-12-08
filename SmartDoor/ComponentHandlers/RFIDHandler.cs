@@ -69,9 +69,6 @@ namespace SmartDoor
         /// </summary>
         public void Shutdown()
         {
-            //turn off the led
-            rfidReader.LED = false;
-
             //close the phidget and dispose of the object
             rfidReader.close();
         }

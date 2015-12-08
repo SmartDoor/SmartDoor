@@ -26,7 +26,7 @@ namespace SmartDoor
             masterController.Setup();
 
             AdminController AdminController = new AdminController(masterController, secController);
-
+            
             AdminController.AdminCLI();
 
             // Handle shutdown...

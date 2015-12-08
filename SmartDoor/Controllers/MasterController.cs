@@ -13,7 +13,8 @@ namespace SmartDoor
     {
         public RFIDHandler rfidHandler { get; }
         public MotorHandler motorHandler { get; }
-        public InterfaceHandler interfaceHandler { get; } 
+        public InterfaceHandler interfaceHandler { get; }
+        public LCDHandler lcdHandler { get; }
         private Timer lockTimer;
         private SecurityController secController;
 
@@ -24,6 +25,7 @@ namespace SmartDoor
             rfidHandler = new RFIDHandler();
             motorHandler = new MotorHandler(1);
             interfaceHandler = new InterfaceHandler();
+            lcdHandler = new LCDHandler();
 
             lockTimer = new Timer(1000 * 5);
             lockTimer.AutoReset = true;
@@ -38,9 +40,13 @@ namespace SmartDoor
             rfidHandler.WaitForAttach();
             motorHandler.WaitForAttach();
             interfaceHandler.WaitForAttach();
+            lcdHandler.WaitForAttach();
 
             rfidHandler.Subscribe(this);
             motorHandler.Subscribe(this);
+
+            lcdHandler.showMessage("Welcome", ":P");
+            lcdHandler.displayStatus(true);
         }
         
         /// <summary>
@@ -51,6 +57,7 @@ namespace SmartDoor
             rfidHandler.Shutdown();
             motorHandler.Shutdown();
             interfaceHandler.Shutdown();
+            lcdHandler.Shutdown();
         }
 
         /// <summary>
@@ -68,6 +75,7 @@ namespace SmartDoor
 
                     interfaceHandler.GreenLED(false);
                     interfaceHandler.RedLED(true);
+                    lcdHandler.showMessage("Door status: ", "Locked");
                     break;
 
                 case packageType.motorPackageUnlocked:
@@ -75,6 +83,7 @@ namespace SmartDoor
 
                     interfaceHandler.GreenLED(true);
                     interfaceHandler.RedLED(false);
+                    lcdHandler.showMessage("Door status: ", "Unlocked");
                     break;
 
                 case packageType.RfidPackageFound:
@@ -84,9 +93,11 @@ namespace SmartDoor
                     {
                         Logger.Log("[" + value.message + "]" + " - " + secController.retrieveTag(value.message).name); 
                         motorHandler.UnlockDoor();
+                        lcdHandler.showMessage("Door status: ", "Unlocked");
                     } else
                     {
                         Logger.Log("[" + value.message + "]" + " - " + "Unknown");
+                        lcdHandler.showMessage("Door status: ", "Access Denied");
                     }
                     break;
 

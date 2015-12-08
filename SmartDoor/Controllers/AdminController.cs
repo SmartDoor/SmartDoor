@@ -58,7 +58,7 @@ namespace SmartDoor.Controllers
                         case "removeowner":
                             wantToRemoveOwner = true;
                             break;
-                        case "changeOwner":
+                        case "changeowner":
                             wantToChangeOwner = true;
                             break;
                         case "checktag":
