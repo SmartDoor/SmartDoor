@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentHandlers\Component.cs" />
+    <Compile Include="Controllers\DisplayController.cs" />
     <Compile Include="ComponentHandlers\InterfaceHandler.cs" />
     <Compile Include="ComponentHandlers\LCDHandler.cs" />
     <Compile Include="ComponentHandlers\Package.cs" />
@@ -68,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

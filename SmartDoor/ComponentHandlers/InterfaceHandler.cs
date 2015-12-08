@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartDoor.ComponentHandlers
+namespace SmartDoor.Controllers
 {
     /// <summary>
     /// This class handles the interface connection to the 

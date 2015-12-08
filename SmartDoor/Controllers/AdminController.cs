@@ -1,4 +1,4 @@
-﻿using SmartDoor.ComponentHandlers;
+﻿using SmartDoor.Controllers;
 using SmartDoor.Templates;
 using SmartDoor.Utilities;
 using System;

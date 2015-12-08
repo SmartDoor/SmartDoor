@@ -1,13 +1,13 @@
-﻿using SmartDoor.ComponentHandlers;
+﻿using SmartDoor.Controllers;
 using System;
 using System.Timers;
-using SmartDoor.Controllers;
 using SmartDoor.Utilities;
 
 namespace SmartDoor
 {
     /// <summary>
-    /// The Master Controller of the program. Will handle communication between our different devices.
+    /// The Master Controller of the program. Will handle communication between
+    ///  our different components.
     /// </summary>
     class MasterController : IObserver<Package>, IDisposable
     {
@@ -15,8 +15,10 @@ namespace SmartDoor
         public MotorHandler motorHandler { get; }
         public InterfaceHandler interfaceHandler { get; }
         public LCDHandler lcdHandler { get; }
+        public DisplayController lcdDisplayController { get; }
+        public SecurityController secController;
+
         private Timer lockTimer;
-        private SecurityController secController;
 
         public MasterController(SecurityController secController)
         {
@@ -25,11 +27,12 @@ namespace SmartDoor
             rfidHandler = new RFIDHandler();
             motorHandler = new MotorHandler(1);
             interfaceHandler = new InterfaceHandler();
-            lcdHandler = new LCDHandler();
+            lcdDisplayController = new DisplayController(secController);
 
             lockTimer = new Timer(1000 * 5);
             lockTimer.AutoReset = true;
             lockTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+
         }
 
         /// <summary>
@@ -40,13 +43,15 @@ namespace SmartDoor
             rfidHandler.WaitForAttach();
             motorHandler.WaitForAttach();
             interfaceHandler.WaitForAttach();
-            lcdHandler.WaitForAttach();
+            lcdDisplayController.Setup();
 
             rfidHandler.Subscribe(this);
             motorHandler.Subscribe(this);
 
-            lcdHandler.showMessage("Welcome", ":P");
-            lcdHandler.displayStatus(true);
+            rfidHandler.Subscribe(lcdDisplayController);
+            motorHandler.Subscribe(lcdDisplayController);
+
+
         }
         
         /// <summary>
@@ -57,7 +62,6 @@ namespace SmartDoor
             rfidHandler.Shutdown();
             motorHandler.Shutdown();
             interfaceHandler.Shutdown();
-            lcdHandler.Shutdown();
         }
 
         /// <summary>
@@ -70,34 +74,27 @@ namespace SmartDoor
             {
                 case packageType.motorPackageLocked:
                     Logger.DebugLog("MotorHandler : Door " + value.message);
-
                     lockTimer.Stop();
-
                     interfaceHandler.GreenLED(false);
                     interfaceHandler.RedLED(true);
-                    lcdHandler.showMessage("Door status: ", "Locked");
                     break;
 
                 case packageType.motorPackageUnlocked:
                     Logger.DebugLog("MotorHandler : Door " + value.message);
-
                     interfaceHandler.GreenLED(true);
                     interfaceHandler.RedLED(false);
-                    lcdHandler.showMessage("Door status: ", "Unlocked");
                     break;
 
                 case packageType.RfidPackageFound:
                     Logger.DebugLog("RFIDHandler : " + (secController.isSecureRFIDTag(value.message) ? "Secure" : "Unknown") + " Tag found [" +value.message +"]");
 
-                    if(secController.isSecureRFIDTag(value.message))
+                    if (secController.isSecureRFIDTag(value.message))
                     {
-                        Logger.Log("[" + value.message + "]" + " - " + secController.retrieveTag(value.message).name); 
+                        Logger.Log("[" + value.message + "]" + " - " + secController.retrieveTag(value.message).name);
                         motorHandler.UnlockDoor();
-                        lcdHandler.showMessage("Door status: ", "Unlocked");
                     } else
                     {
                         Logger.Log("[" + value.message + "]" + " - " + "Unknown");
-                        lcdHandler.showMessage("Door status: ", "Access Denied");
                     }
                     break;
 

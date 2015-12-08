@@ -3,7 +3,7 @@ using Phidgets;
 using Phidgets.Events;
 
 using System.Collections.Generic;
-using SmartDoor.ComponentHandlers;
+using SmartDoor.Controllers;
 using SmartDoor.Utilities;
 
 namespace SmartDoor

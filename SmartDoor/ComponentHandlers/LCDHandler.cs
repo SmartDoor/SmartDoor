@@ -2,16 +2,27 @@
 using Phidgets;
 using Phidgets.Events;
 using System.Collections;
+using System.Runtime.CompilerServices;
+using System.Text;
 
-namespace SmartDoor.ComponentHandlers
+namespace SmartDoor.Controllers
 {   
     /// <summary>
     /// Handles the LCD screen display.
     /// </summary>
     class LCDHandler : Component
     {
+        public const int UNLOCKED_ICON_INDEX = 1;
+        public const int LOCKED_ICON_INDEX = 0;
+
         private TextLCD lcdAdapter;
         private TextLCDScreen screen;
+
+        private TextLCDCustomCharacter doorStatus;
+
+        private String lastSecondRow { get; set; }
+        private String lastFirstRow { get; set; }
+        private String currentDate;
 
         /// <summary>
         /// Creates a new LCD Display.
@@ -19,6 +30,9 @@ namespace SmartDoor.ComponentHandlers
         public LCDHandler()
         {
             lcdAdapter = new TextLCD();
+            lastSecondRow = "";
+            lastFirstRow = "";
+            currentDate = string.Format("{0:HH:mm}", DateTime.Now);
         }
 
         /// <summary>
@@ -33,20 +47,51 @@ namespace SmartDoor.ComponentHandlers
         /// <summary>
         /// Displays a message on the LCD display.
         /// </summary>
-        /// <param name="firstRow"></param>
-        /// <param name="secondRow"></param>
+        /// <param name="firstRow">String to be displayed on the first row of the LCD
+        /// display.</param>
+        /// <param name="secondRow">String to be displayed on the second row of the
+        /// LCD display.</param>
+        [MethodImpl(MethodImplOptions.Synchronized)]
         public void showMessage(String firstRow, String secondRow)
         {
             if(lcdAdapter.Attached)
             {
-                Console.WriteLine("rows : " + screen.rows.Count);
                 if (screen.rows.Count > 1)
                 {
-                    screen.rows[0].DisplayString = firstRow;
+                    if(firstRow.Length > 17)
+                        firstRow = firstRow.Substring(0, 17);
 
+                    if(secondRow.Length > 13)
+                        secondRow = secondRow.Substring(0, 14);
+
+                    firstRow = firstRow.PadRight(19) + doorStatus.StringCode;
+                    secondRow = secondRow.PadRight(15) + string.Format("{0:HH:mm}", DateTime.Now);
+
+                    screen.rows[0].DisplayString = firstRow;
                     screen.rows[1].DisplayString = secondRow;
+
+                    lastFirstRow = firstRow;
+                    lastSecondRow = secondRow;
                 }
             }
+        }
+
+        /// <summary>
+        /// Forces a refresh of the LCD display with the latest data that
+        /// the LCD is displaying such as datetime.
+        /// </summary>
+        public void updateTime()
+        {
+            if (currentDate == string.Format("{0:HH:mm}", DateTime.Now))
+            {
+                currentDate = string.Format("{0:HH:mm}", DateTime.Now);
+                showMessage(lastFirstRow, lastSecondRow);
+            }
+        }
+
+        public void showMessage(String row, int character)
+        {
+            showMessage(row, screen.customCharacters[character].StringCode);
         }
 
         /// <summary>
@@ -57,6 +102,18 @@ namespace SmartDoor.ComponentHandlers
         {
             lcdAdapter.Backlight = status;
             screen.Backlight = status;
+        }
+
+        public void setLockedIcon(bool status)
+        {
+            if(status == true)
+            {
+                doorStatus = screen.customCharacters[LOCKED_ICON_INDEX];
+            } else
+            {
+                doorStatus = screen.customCharacters[UNLOCKED_ICON_INDEX];
+            }
+            showMessage(lastFirstRow, lastSecondRow);
         }
 
 
@@ -78,6 +135,9 @@ namespace SmartDoor.ComponentHandlers
             screen = lcdAdapter.screens[1];
             screen.ScreenSize = TextLCD.ScreenSizes._2x40;
             screen.initialize();
+
+            screen.customCharacters[LOCKED_ICON_INDEX].setCustomCharacter(574912, 32639);
+            screen.customCharacters[UNLOCKED_ICON_INDEX].setCustomCharacter(38050, 32639);
         }
 
         private void lcd_Attach(object sender, AttachEventArgs e)

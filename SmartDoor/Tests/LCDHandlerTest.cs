@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using SmartDoor.ComponentHandlers;
+using SmartDoor.Controllers;
 using System.Threading;
 
 namespace ComponentTests
