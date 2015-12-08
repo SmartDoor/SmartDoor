@@ -12,5 +12,6 @@
 }
 
 .jumbotron {
-      background-image: url(../images/wood.png);
+      /*background-image: url(../images/wood.png);*/
+    background-color: #42a5f5;
 }
