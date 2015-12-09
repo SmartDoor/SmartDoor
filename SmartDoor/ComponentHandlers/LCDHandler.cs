@@ -77,6 +77,34 @@ namespace SmartDoor.Controllers
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="firstRow"></param>
+        /// <param name="secondRow"></param>
+        public void showMessage(String message)
+        {
+            if (lcdAdapter.Attached)
+            {
+                if (screen.rows.Count > 1)
+                {
+                    lastSecondRow = lastSecondRow.Substring(0, 14);
+
+                    if (message.Length > 13)
+                        message = message.Substring(0, 14);
+
+                    lastSecondRow = lastSecondRow.PadRight(19) + doorStatus.StringCode;
+                    message = message.PadRight(15) + string.Format("{0:HH:mm}", DateTime.Now);
+
+                    screen.rows[0].DisplayString = lastSecondRow;
+                    screen.rows[1].DisplayString = message;
+
+                    lastFirstRow = lastSecondRow;
+                    lastSecondRow = message;
+                }
+            }
+        }
+
+        /// <summary>
         /// Forces a refresh of the LCD display with the latest data that
         /// the LCD is displaying such as datetime.
         /// </summary>

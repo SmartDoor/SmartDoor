@@ -40,6 +40,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentHandlers\Component.cs" />
+    <Compile Include="ComponentHandlers\TemperatureHandler.cs" />
     <Compile Include="Controllers\DisplayController.cs" />
     <Compile Include="ComponentHandlers\InterfaceHandler.cs" />
     <Compile Include="ComponentHandlers\LCDHandler.cs" />
@@ -62,7 +64,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ComponentHandlers\RFIDHandler.cs" />
     <Compile Include="Templates\Person.cs" />
-    <Compile Include="Templates\RFIDTags.cs" />
+    <Compile Include="Templates\PersonContainer.cs" />
     <Compile Include="Tests\LCDHandlerTest.cs" />
     <Compile Include="Utilities\Debugger.cs" />
     <Compile Include="Utilities\FileHandler.cs" />

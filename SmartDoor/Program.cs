@@ -20,17 +20,13 @@ namespace SmartDoor
         /// <param name="args">Not used by this program yet.</param>
         static void Main(string[] args)
         {
-            SecurityController secController = new SecurityController();
-            secController.readSecureRFIDTags();
-            MasterController masterController = new MasterController(secController);
-            masterController.Setup();
-
-            AdminController AdminController = new AdminController(masterController, secController);
-            
-            AdminController.AdminCLI();
+            SecurityController.Instance.readSecureRFIDTags();
+            DisplayController.Instance.Setup();
+            MasterController.Instance.Setup();
+            AdminController.Instance.AdminCLI();
 
             // Handle shutdown...
-            masterController.Shutdown();
+            MasterController.Instance.Shutdown();
         }
     }
 }

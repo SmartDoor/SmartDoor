@@ -6,43 +6,44 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using SmartDoor.Templates;
+using System.Web.Script.Serialization;
 
 namespace SmartDoor.Utilities
 {
     class FileHandler
     {
+        private JavaScriptSerializer JsonConvert;
+
+        public FileHandler()
+        {
+            JsonConvert = new JavaScriptSerializer();
+        }
+
         /// <summary>
         /// Writes a serializable class to a file
         /// </summary>
-        /// <param name="secureRFIDTags"></param>
-        public void WriteToFile(RFIDTags secureRFIDTags)
+        /// <param name="securePersons"></param>
+        public void WriteToFile(PersonContainer securePersons)
         {
             Logger.DebugLog("Updating file");
-            FileStream stream = File.Create("RFID.Secure");
-
-            BinaryFormatter bformatter = new BinaryFormatter();
-            bformatter.Serialize(stream, secureRFIDTags);
-
-            stream.Close();
+            String json = JsonConvert.Serialize(securePersons);
+            File.WriteAllText("RFID.Secure", json);
         }
 
         /// <summary>
         /// Read a file that contains a serialized object
         /// </summary>
         /// <returns></returns>
-        public RFIDTags ReadFile()
+        public PersonContainer ReadFile()
         {
             Logger.DebugLog("Trying to read file");
-            RFIDTags secureRFIDTags = null;
+            PersonContainer securePersons = null;
 
             //Open the file written above and read values from it.
-            FileStream stream = File.Open("RFID.Secure", FileMode.Open);
-            BinaryFormatter bformatter = new BinaryFormatter();
+            Console.WriteLine("FILE : " + File.ReadAllText("RFID.Secure"));
+            securePersons = JsonConvert.Deserialize<PersonContainer>(File.ReadAllText("RFID.Secure"));
 
-            secureRFIDTags = (RFIDTags)bformatter.Deserialize(stream);
-            stream.Close();
-
-            return secureRFIDTags;
+            return securePersons;
         }
     }
 }

@@ -11,47 +11,60 @@ namespace SmartDoor
     /// </summary>
     class MasterController : IObserver<Package>, IDisposable
     {
-        public RFIDHandler rfidHandler { get; }
-        public MotorHandler motorHandler { get; }
-        public InterfaceHandler interfaceHandler { get; }
-        public LCDHandler lcdHandler { get; }
-        public DisplayController lcdDisplayController { get; }
-        public SecurityController secController;
+        private static MasterController instance;
 
-        private Timer lockTimer;
-
-        public MasterController(SecurityController secController)
+        private MasterController()
         {
-            this.secController = secController;
-
             rfidHandler = new RFIDHandler();
             motorHandler = new MotorHandler(1);
             interfaceHandler = new InterfaceHandler();
-            lcdDisplayController = new DisplayController(secController);
 
             lockTimer = new Timer(1000 * 5);
             lockTimer.AutoReset = true;
             lockTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-
         }
+
+        public static MasterController Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new MasterController();
+                }
+                return instance;
+            }
+        }
+
+
+        public RFIDHandler rfidHandler { get; }
+        public MotorHandler motorHandler { get; }
+        public InterfaceHandler interfaceHandler { get; }
+        public LCDHandler lcdHandler { get; }
+
+        public SecurityController secController;
+
+        private Timer lockTimer;
 
         /// <summary>
         /// 
         /// </summary>
         public void Setup()
         {
+            secController = SecurityController.Instance;
+
             rfidHandler.WaitForAttach();
             motorHandler.WaitForAttach();
             interfaceHandler.WaitForAttach();
-            lcdDisplayController.Setup();
 
             rfidHandler.Subscribe(this);
             motorHandler.Subscribe(this);
 
-            rfidHandler.Subscribe(lcdDisplayController);
-            motorHandler.Subscribe(lcdDisplayController);
+            rfidHandler.Subscribe(DisplayController.Instance);
+            motorHandler.Subscribe(DisplayController.Instance);
 
-
+            motorHandler.Subscribe(AdminController.Instance);
+            rfidHandler.Subscribe(AdminController.Instance);
         }
         
         /// <summary>

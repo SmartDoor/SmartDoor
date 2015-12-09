@@ -12,7 +12,29 @@ namespace SmartDoor.Controllers
 {
     class AdminController : IObserver<Package>
     {
-        private SecurityController securityController;
+        private static AdminController instance;
+
+        private AdminController()
+        {
+            wantToAddTag = false;
+            wantToRemoveTag = false;
+            wantToRemoveOwner = false;
+            wantToChangeOwner = false;
+            wantToCheckTag = false;
+        }
+
+        public static AdminController Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new AdminController();
+                }
+                return instance;
+            }
+        }
+
         private Logger debugger = Logger.GetInstance();
 
         /** options */
@@ -21,19 +43,6 @@ namespace SmartDoor.Controllers
         private bool wantToChangeOwner;
         private bool wantToRemoveOwner;
         private bool wantToCheckTag;
-
-        public AdminController(MasterController masterController, SecurityController securityController)
-        {
-            this.securityController = securityController;
-
-            masterController.motorHandler.Subscribe(this);
-            masterController.rfidHandler.Subscribe(this);
-            wantToAddTag = false;
-            wantToRemoveTag = false;
-            wantToRemoveOwner = false;
-            wantToChangeOwner = false;
-            wantToCheckTag = false;
-        }
 
         public void AdminCLI()
         {
@@ -124,7 +133,7 @@ namespace SmartDoor.Controllers
         {
             if (wantToAddTag)
             {
-                securityController.addTag(value.message);
+                SecurityController.Instance.addTag(value.message);
                 wantToAddTag = false;
             }
         }
@@ -133,7 +142,7 @@ namespace SmartDoor.Controllers
         {
             if (wantToRemoveTag)
             {
-                securityController.removeTag(value.message);
+                SecurityController.Instance.removeTag(value.message);
                 wantToRemoveTag = false;
             }
         }
@@ -143,7 +152,7 @@ namespace SmartDoor.Controllers
             if (wantToRemoveOwner)
             {
                 String input = Console.ReadLine();
-                securityController.removeTagOwner(input);
+                SecurityController.Instance.removeTagOwner(input);
                 wantToRemoveOwner = false;
             }
         }
@@ -153,7 +162,7 @@ namespace SmartDoor.Controllers
             if (wantToChangeOwner)
             {
                 String input = Console.ReadLine();
-                securityController.addTag(input);
+                SecurityController.Instance.addTag(input);
                 wantToChangeOwner = false;
             }
         }
@@ -162,7 +171,7 @@ namespace SmartDoor.Controllers
         {
             if (wantToCheckTag)
             {
-                Person owner = securityController.retrieveTag(value.message);
+                Person owner = SecurityController.Instance.retrieveTag(value.message);
 
                 Console.WriteLine("\n[" + value.message + "]");
                 if (owner == null)

@@ -14,16 +14,27 @@ namespace SmartDoor.Controllers
     /// </summary>
     class SecurityController
     {
-        private RFIDTags secureRFIDTags;
-        private FileHandler fileHandler;
+        private static SecurityController instance;
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public SecurityController()
+        private SecurityController()
         {
             fileHandler = new FileHandler();
         }
+
+        public static SecurityController Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new SecurityController();
+                }
+                return instance;
+            }
+        }
+
+        private PersonContainer secureRFIDTags;
+        private FileHandler fileHandler;
 
         /// <summary>
         /// 
@@ -37,7 +48,7 @@ namespace SmartDoor.Controllers
             {
                 if(secureRFIDTags == null)
                 {
-                    secureRFIDTags = new RFIDTags();
+                    secureRFIDTags = new PersonContainer();
                 }
             }
         }
@@ -48,22 +59,23 @@ namespace SmartDoor.Controllers
         /// <param name="tag">Tag to be added.</param>
         public void addTag(String tag)
         {
-            Person owner = new Person();
+            Person person = new Person();
             Console.WriteLine("\n Tag [" + tag + "]");
             Console.Write("Enter name of owner : ");
 
             String input = "";
             input = Console.ReadLine();
 
-            owner.name = input;
-            owner.email = owner.name + "@gmail.com";
-            owner.birthday = "2000-00-00";
+            person.rfid = tag;
+            person.name = input;
+            person.email = person.name + "@gmail.com";
+            person.birthday = "2000-00-00";
 
-            Console.WriteLine(owner.ToString());
+            Console.WriteLine(person.ToString());
 
-            if (secureRFIDTags.RegisterRFIDTag(tag, owner))
+            if (secureRFIDTags.RegisterRFIDTag(person))
             {
-                Logger.Log("[Registred][" + tag + "] " + owner.name);
+                Logger.Log("[Registred][" + tag + "] " + person.name);
                 fileHandler.WriteToFile(secureRFIDTags);
             }
         }

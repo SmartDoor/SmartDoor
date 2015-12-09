@@ -1,41 +1,69 @@
-﻿using System;
+﻿using SmartDoor.ComponentHandlers;
+using SmartDoor.Templates;
+using System;
+using System.Collections;
 using System.Diagnostics;
 using System.Timers;
 
 namespace SmartDoor.Controllers
 {
+    /// <summary>
+    /// Singleton observer controller class to handle
+    /// events regarding the LCD display.
+    /// </summary>
     class DisplayController : IObserver<Package>, IDisposable
     {
+        private static DisplayController instance;
         public LCDHandler lcdHandler { get; }
 
+        private TemperatureHandler tempComponent;
         private Timer updateLCDTimer;
-
-        private SecurityController secController;
         private Stopwatch lastChange;
 
-        public DisplayController(SecurityController secController)
-        {
-            this.secController = secController;
+        private IList screenMessages;
+
+        /// <summary>
+        /// Constructs a new Display controller class.
+        /// </summary>
+        private DisplayController() {
             lcdHandler = new LCDHandler();
             lastChange = new Stopwatch();
+            tempComponent = new TemperatureHandler();
 
             updateLCDTimer = new Timer(1000);
             updateLCDTimer.AutoReset = true;
             updateLCDTimer.Elapsed += new ElapsedEventHandler(OnUpdateLCDEvent);
+        }
 
+        public static DisplayController Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = new DisplayController();
+                }
+                return instance;
+            }
         }
 
 
         /// <summary>
-        /// 
+        /// Setups the needed data and waits for attachments on
+        /// the componenets needed by this object.
         /// </summary>
         public void Setup()
         {
             lcdHandler.WaitForAttach();
+            tempComponent.WaitForAttach();
 
+            // Turns on the backlight on the screen
             lcdHandler.displayStatus(true);
+
+            // Sets the locking icon as the initial icon showed on the screen.
             lcdHandler.setLockedIcon(true);
 
+            // Starts the update timer.
             updateLCDTimer.Start();
         }
 
@@ -44,6 +72,7 @@ namespace SmartDoor.Controllers
         /// </summary>
         public void Shutdown()
         {
+            this.Dispose();
             lcdHandler.Shutdown();
         }
 
@@ -55,24 +84,34 @@ namespace SmartDoor.Controllers
         {
             switch (value.type)
             {
+                //Door is locked, sets the locking icon
                 case packageType.motorPackageLocked:
                     lcdHandler.setLockedIcon(true);
                     break;
+                
+                // Sets the unlocking icon.
                 case packageType.motorPackageUnlocked:
                     lcdHandler.setLockedIcon(false);
                     break;
+
+                // RFID Tag found
                 case packageType.RfidPackageFound:
-                    if (secController.isSecureRFIDTag(value.message))
+                    if (SecurityController.Instance.isSecureRFIDTag(value.message))
                     {
-                        lcdHandler.showMessage("Welcome home", secController.retrieveTag(value.message).name);
+                        lcdHandler.showMessage("Welcome home", SecurityController.Instance.retrieveTag(value.message).name);
+
+                        // Replace the message list with the one from the person
+                        // who is opening the door
+                        screenMessages = SecurityController.Instance.retrieveTag(value.message).getMessage();
                     }
                     else
                     {
-                        lcdHandler.showMessage("Greetings ", "Unknown person");
+                        lcdHandler.showMessage("Greetings ", "Stranger");
+                        screenMessages = null;
                     }
                     break;
                 case packageType.RfidPackageLost:
-                   
+                    // No implementation needed
                     break;
                 default:
                     throw new Exception("Unknown Package");
@@ -84,14 +123,28 @@ namespace SmartDoor.Controllers
                 lastChange.Restart();
         }
 
+        /// <summary>
+        /// Updates the LCD screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnUpdateLCDEvent(object sender, ElapsedEventArgs e)
         {
-            if(lastChange.IsRunning && lastChange.Elapsed.Seconds > 5)
+            if(lastChange.IsRunning && lastChange.Elapsed.Seconds > 3)
             {
-                lcdHandler.showMessage("", "");
-                lastChange.Stop();
+                if(screenMessages != null && screenMessages.Count > 0)
+                {
+                    lcdHandler.displayStatus(true);
+                    lcdHandler.showMessage(tempComponent.getTempString());
+                } else
+                {
+                    lcdHandler.showMessage("", "");
+                    lcdHandler.displayStatus(false);
+                    lastChange.Stop();
+                }
             }
 
+            //Update time
             lcdHandler.updateTime();
         }
 
@@ -112,6 +165,9 @@ namespace SmartDoor.Controllers
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Dispose()
         {
             updateLCDTimer.Dispose();

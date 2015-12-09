@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartDoor.Controllers
 {
@@ -14,6 +10,9 @@ namespace SmartDoor.Controllers
         motorPackageUnlocked
     };
 
+    /// <summary>
+    /// 
+    /// </summary>
     class Package
     {
         public packageType type { get; private set; }
