@@ -12,12 +12,13 @@ namespace SmartDoor.Controllers
     /// <summary>
     /// 
     /// </summary>
-    class SecurityController
+    class SecurityController : Controller
     {
         private static SecurityController instance;
 
         private SecurityController()
         {
+            rfidHandler = new RFIDHandler();
             fileHandler = new FileHandler();
         }
 
@@ -33,8 +34,19 @@ namespace SmartDoor.Controllers
             }
         }
 
-        private PersonContainer secureRFIDTags;
+        private PersonHandler personHandler;
+        public RFIDHandler rfidHandler;
         private FileHandler fileHandler;
+
+
+        public void Setup()
+        {
+            rfidHandler.WaitForAttach();
+            rfidHandler.Subscribe(MotorController.Instance);
+            rfidHandler.Subscribe(DisplayController.Instance);
+            rfidHandler.Subscribe(AdminController.Instance);
+            rfidHandler.Subscribe(InterfaceController.Instance);
+        }
 
         /// <summary>
         /// 
@@ -43,12 +55,12 @@ namespace SmartDoor.Controllers
         {
             try
             {
-                secureRFIDTags = fileHandler.ReadFile();
-            } catch (FileNotFoundException e )
+                personHandler = fileHandler.ReadFile();
+            } catch (FileNotFoundException e)
             {
-                if(secureRFIDTags == null)
+                if(personHandler == null)
                 {
-                    secureRFIDTags = new PersonContainer();
+                    personHandler = new PersonHandler();
                 }
             }
         }
@@ -73,10 +85,10 @@ namespace SmartDoor.Controllers
 
             Console.WriteLine(person.ToString());
 
-            if (secureRFIDTags.RegisterRFIDTag(person))
+            if (personHandler.RegisterPerson(person))
             {
                 Logger.Log("[Registred][" + tag + "] " + person.name);
-                fileHandler.WriteToFile(secureRFIDTags);
+                fileHandler.WriteToFile(personHandler);
             }
         }
 
@@ -84,12 +96,12 @@ namespace SmartDoor.Controllers
         /// Removes an RFID tag from the allowed tags in memory.
         /// </summary>
         /// <param name="tag"></param>
-        public void removeTag(string tag)
+        public void RemovePersonTag(string tag)
         {
-            if (secureRFIDTags.DeleteRFIDtag(tag))
+            if (personHandler.DeleteRFIDtag(tag))
             {
                 Logger.Log("[Removed][" + tag + "]");
-                fileHandler.WriteToFile(secureRFIDTags);
+                fileHandler.WriteToFile(personHandler);
             }
         }
 
@@ -99,10 +111,10 @@ namespace SmartDoor.Controllers
         /// <param name="tag"></param>
         public void removeTagOwner(string owner)
         {
-            if (secureRFIDTags.DeleteOwner(owner))
+            if (personHandler.DeletePerson(owner))
             {
                 Logger.Log("[Removed] " + owner);
-                fileHandler.WriteToFile(secureRFIDTags);
+                fileHandler.WriteToFile(personHandler);
             }
         }
 
@@ -111,9 +123,9 @@ namespace SmartDoor.Controllers
         /// Retrieves an tag
         /// </summary>
         /// <param name="tag"></param>
-        public Person retrieveTag(string tag)
+        public Person RetrievePersonByTag(string tag)
         {
-            return secureRFIDTags.getOwnerOfTag(tag);
+            return personHandler.getOwnerOfTag(tag);
         }
 
         /// <summary>
@@ -121,9 +133,14 @@ namespace SmartDoor.Controllers
         /// </summary>
         /// <param name="tag"></param>
         /// <returns></returns>
-        public bool isSecureRFIDTag(String tag)
+        public bool IsSecureRFIDTag(String tag)
         {
-            return secureRFIDTags.isTagRegistred(tag);
+            return personHandler.isTagRegistred(tag);
+        }
+
+        public void Shutdown()
+        {
+            rfidHandler.Shutdown();
         }
     }
 }

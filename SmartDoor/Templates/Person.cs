@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace SmartDoor.Templates
@@ -11,7 +12,7 @@ namespace SmartDoor.Templates
         public String email;
         public String birthday;
 
-        private ArrayList messages;
+        private List<String> messages;
 
         // Thread safe access locking object.
         [NonSerialized]
@@ -30,7 +31,7 @@ namespace SmartDoor.Templates
             lock(accessLock)
             {
                 if (messages == null)
-                    messages = new ArrayList();
+                    messages = new List<String>();
 
                 messages.Add(message);
             }
@@ -56,7 +57,7 @@ namespace SmartDoor.Templates
         /// 
         /// </summary>
         /// <returns></returns>
-        public ArrayList getMessage()
+        public List<String> getMessage()
         {
             lock(accessLock)
             {

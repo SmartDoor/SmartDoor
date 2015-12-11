@@ -85,7 +85,6 @@ namespace SmartDoor
         /// </summary>
         public void Shutdown()
         {
-            servoMotor[0].Engaged = false;
             servoController.close();
         }
 

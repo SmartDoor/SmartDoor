@@ -41,6 +41,7 @@ namespace SmartDoor.Controllers
         /// </summary>
         public void Shutdown()
         {
+            displayStatus(true);
             lcdAdapter.close();
         }
 

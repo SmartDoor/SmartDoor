@@ -23,7 +23,7 @@ namespace SmartDoor.Utilities
         /// Writes a serializable class to a file
         /// </summary>
         /// <param name="securePersons"></param>
-        public void WriteToFile(PersonContainer securePersons)
+        public void WriteToFile(PersonHandler securePersons)
         {
             Logger.DebugLog("Updating file");
             String json = JsonConvert.Serialize(securePersons);
@@ -34,14 +34,14 @@ namespace SmartDoor.Utilities
         /// Read a file that contains a serialized object
         /// </summary>
         /// <returns></returns>
-        public PersonContainer ReadFile()
+        public PersonHandler ReadFile()
         {
             Logger.DebugLog("Trying to read file");
-            PersonContainer securePersons = null;
+            PersonHandler securePersons = null;
 
             //Open the file written above and read values from it.
             Console.WriteLine("FILE : " + File.ReadAllText("RFID.Secure"));
-            securePersons = JsonConvert.Deserialize<PersonContainer>(File.ReadAllText("RFID.Secure"));
+            securePersons = JsonConvert.Deserialize<PersonHandler>(File.ReadAllText("RFID.Secure"));
 
             return securePersons;
         }

@@ -21,12 +21,18 @@ namespace SmartDoor
         static void Main(string[] args)
         {
             SecurityController.Instance.readSecureRFIDTags();
+            InterfaceController.Instance.Setup();
             DisplayController.Instance.Setup();
-            MasterController.Instance.Setup();
+            MotorController.Instance.Setup();
+            SecurityController.Instance.Setup();
             AdminController.Instance.AdminCLI();
 
             // Handle shutdown...
-            MasterController.Instance.Shutdown();
+            MotorController.Instance.Shutdown();
+            InterfaceController.Instance.Shutdown();
+            DisplayController.Instance.Shutdown();
+            MotorController.Instance.Shutdown();
+            SecurityController.Instance.Shutdown();
         }
     }
 }

@@ -11,7 +11,7 @@ namespace SmartDoor.Controllers
     /// Singleton observer controller class to handle
     /// events regarding the LCD display.
     /// </summary>
-    class DisplayController : IObserver<Package>, IDisposable
+    class DisplayController : IObserver<Package>, IDisposable, Controller
     {
         private static DisplayController instance;
         public LCDHandler lcdHandler { get; }
@@ -96,16 +96,18 @@ namespace SmartDoor.Controllers
 
                 // RFID Tag found
                 case packageType.RfidPackageFound:
-                    if (SecurityController.Instance.isSecureRFIDTag(value.message))
+                    if (SecurityController.Instance.IsSecureRFIDTag(value.message))
                     {
-                        lcdHandler.showMessage("Welcome home", SecurityController.Instance.retrieveTag(value.message).name);
+                        lcdHandler.displayStatus(true);
+                        lcdHandler.showMessage("Welcome home", SecurityController.Instance.RetrievePersonByTag(value.message).name);
 
                         // Replace the message list with the one from the person
                         // who is opening the door
-                        screenMessages = SecurityController.Instance.retrieveTag(value.message).getMessage();
+                        screenMessages = SecurityController.Instance.RetrievePersonByTag(value.message).getMessage();
                     }
                     else
                     {
+                        lcdHandler.displayStatus(true);
                         lcdHandler.showMessage("Greetings ", "Stranger");
                         screenMessages = null;
                     }
@@ -134,7 +136,6 @@ namespace SmartDoor.Controllers
             {
                 if(screenMessages != null && screenMessages.Count > 0)
                 {
-                    lcdHandler.displayStatus(true);
                     lcdHandler.showMessage(tempComponent.getTempString());
                 } else
                 {

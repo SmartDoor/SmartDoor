@@ -21,6 +21,7 @@ namespace SmartDoor.Controllers
             wantToRemoveOwner = false;
             wantToChangeOwner = false;
             wantToCheckTag = false;
+            wantToAddMessage = false;
         }
 
         public static AdminController Instance
@@ -35,14 +36,13 @@ namespace SmartDoor.Controllers
             }
         }
 
-        private Logger debugger = Logger.GetInstance();
-
         /** options */
         private bool wantToAddTag;
         private bool wantToRemoveTag;
         private bool wantToChangeOwner;
         private bool wantToRemoveOwner;
         private bool wantToCheckTag;
+        private bool wantToAddMessage;
 
         public void AdminCLI()
         {
@@ -74,10 +74,13 @@ namespace SmartDoor.Controllers
                             wantToCheckTag = true;
                             break;
                         case "debug":
-                            debugger.ToggleDebugMode();
+                            Logger.Instance.ToggleDebugMode();
                             break;
                         case "log":
-                            debugger.ToggleLogMode();
+                            Logger.Instance.ToggleLogMode();
+                            break;
+                        case "addmessage":
+                            wantToAddMessage = true;
                             break;
 
                         default:
@@ -95,7 +98,8 @@ namespace SmartDoor.Controllers
                 wantToRemoveTag ||
                 wantToRemoveOwner ||
                 wantToChangeOwner ||
-                wantToCheckTag)
+                wantToCheckTag ||
+                wantToAddMessage)
             {
                 return true;
             }
@@ -116,16 +120,31 @@ namespace SmartDoor.Controllers
                 case packageType.motorPackageUnlocked:
                     break;
                 case packageType.RfidPackageFound:
+                    break;
+                case packageType.RfidPackageLost:
                     RegisterTag(value);
                     RemoveTag(value);
                     RemoveOwner(value);
                     ChangeOwner(value);
                     CheckTagOwner(value);
-                    break;
-                case packageType.RfidPackageLost:
+                    AddMessage(value);
                     break;
                 default:
                     throw new Exception("Unknown Package");
+            }
+        }
+
+        private void AddMessage(Package value)
+        {
+            if (wantToAddMessage)
+            {
+                if(SecurityController.Instance.IsSecureRFIDTag(value.message)){
+                    Person person = SecurityController.Instance.RetrievePersonByTag(value.message);
+                    Console.WriteLine("Enter message : ");
+                    person.addMessage(Console.ReadLine());
+                    Console.WriteLine("Done");
+                    wantToAddMessage = false;
+                }
             }
         }
 
@@ -142,7 +161,7 @@ namespace SmartDoor.Controllers
         {
             if (wantToRemoveTag)
             {
-                SecurityController.Instance.removeTag(value.message);
+                SecurityController.Instance.RemovePersonTag(value.message);
                 wantToRemoveTag = false;
             }
         }
@@ -171,7 +190,7 @@ namespace SmartDoor.Controllers
         {
             if (wantToCheckTag)
             {
-                Person owner = SecurityController.Instance.retrieveTag(value.message);
+                Person owner = SecurityController.Instance.RetrievePersonByTag(value.message);
 
                 Console.WriteLine("\n[" + value.message + "]");
                 if (owner == null)
