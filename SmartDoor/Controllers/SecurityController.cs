@@ -7,11 +7,15 @@ namespace SmartDoor.Controllers
 {
     /// <summary>
     /// 
+    /// Implemented with the singleton design pattern.
     /// </summary>
     class SecurityController : Controller
     {
         private static SecurityController instance;
 
+        /// <summary>
+        /// Private constructor, initialises the object.
+        /// </summary>
         private SecurityController()
         {
             rfidHandler = new RFIDHandler();
@@ -50,7 +54,7 @@ namespace SmartDoor.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Reads a rfid tag
         /// </summary>
         public void readSecureRFIDTags()
         {

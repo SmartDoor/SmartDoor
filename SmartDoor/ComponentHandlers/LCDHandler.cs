@@ -78,10 +78,9 @@ namespace SmartDoor.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Shows a message on the LCD Screen
         /// </summary>
-        /// <param name="firstRow"></param>
-        /// <param name="secondRow"></param>
+        /// <param name="message"></param>
         public void showMessage(String message)
         {
             if (lcdAdapter.Attached)

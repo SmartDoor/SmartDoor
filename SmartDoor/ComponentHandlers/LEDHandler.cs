@@ -1,10 +1,5 @@
 ﻿using System;
 using Phidgets;
-using Phidgets.Events;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartDoor.Controllers
 {
@@ -82,12 +77,9 @@ namespace SmartDoor.Controllers
         public void RfidFoundStatus(bool status)
         {
             if (status)
-            {
                 YellowLED(true);
-            } else
-            {
+            else
                 YellowLED(false);
-            }
         }
 
         /// <summary>
