@@ -11,7 +11,9 @@ namespace SmartDoor.Controllers
     };
 
     /// <summary>
-    /// 
+    /// A simple datastructure class for defining 
+    /// how information is sent between objects that is using
+    /// the observer-observable pattern.
     /// </summary>
     class Package
     {

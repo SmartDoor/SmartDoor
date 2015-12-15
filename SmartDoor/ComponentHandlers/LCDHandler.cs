@@ -118,6 +118,11 @@ namespace SmartDoor.Controllers
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="character"></param>
         public void showMessage(String row, int character)
         {
             showMessage(row, screen.customCharacters[character].StringCode);
@@ -133,6 +138,10 @@ namespace SmartDoor.Controllers
             screen.Backlight = status;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="status"></param>
         public void setLockedIcon(bool status)
         {
             if(status == true)
@@ -152,6 +161,7 @@ namespace SmartDoor.Controllers
         public void WaitForAttach()
         {
 
+            // Attach the event handlers.
             lcdAdapter.Attach += new AttachEventHandler(lcd_Attach);
             lcdAdapter.Detach += new DetachEventHandler(lcd_Detach);
             lcdAdapter.Error += new ErrorEventHandler(lcd_Error);
@@ -165,10 +175,16 @@ namespace SmartDoor.Controllers
             screen.ScreenSize = TextLCD.ScreenSizes._2x40;
             screen.initialize();
 
+            // Setup the custom characters.
             screen.customCharacters[LOCKED_ICON_INDEX].setCustomCharacter(574912, 32639);
             screen.customCharacters[UNLOCKED_ICON_INDEX].setCustomCharacter(38050, 32639);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lcd_Attach(object sender, AttachEventArgs e)
         {
             TextLCD attached = (TextLCD)sender;
@@ -179,6 +195,11 @@ namespace SmartDoor.Controllers
                                     serialNo);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lcd_Detach(object sender, DetachEventArgs e)
         {
             TextLCD detached = (TextLCD)sender;
@@ -189,6 +210,11 @@ namespace SmartDoor.Controllers
                                     serialNo);
         }
 
+        /// <summary>
+        /// Is called if an error occurs during runtime.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lcd_Error(object sender, ErrorEventArgs e)
         {
             Console.WriteLine("LCD Error: e.Description");

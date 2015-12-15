@@ -8,13 +8,25 @@ using SmartDoor.Templates;
 namespace SmartDoor
 {
     /// <summary>
-    /// The Master Controller of the program. Will handle communication between
-    ///  our different components.
+    /// MotorController class, responsible for handling the locking/unlocking of
+    /// the door and sending commands to the motor controller.
+    /// 
+    /// 
+    /// Implemented by a singleton pattern to ensure we only can have one
+    /// motor controller present at runtime.
+    /// 
+    /// The unlocking is done using the Timer that will automaticly lock the door 
+    /// after a certain amount of time.
     /// </summary>
     class MotorController : IObserver<Package>, IDisposable, Controller
     {
         private static MotorController instance;
 
+        /// <summary>
+        /// Constructs a new MotorController object, will setup a 
+        /// locking reset timer and a ComponentHandler for the electric motor
+        /// that is in charge of locking door after 5 seconds is has been unlocked.
+        /// </summary>
         private MotorController()
         {
             motorHandler = new MotorHandler(1);
@@ -51,7 +63,8 @@ namespace SmartDoor
         }
         
         /// <summary>
-        /// 
+        /// Handles the shutdown of the components that the mastercontroller 
+        /// is responsible for.
         /// </summary>
         public void Shutdown()
         {
@@ -59,7 +72,7 @@ namespace SmartDoor
         }
 
         /// <summary>
-        /// 
+        /// This method handles incomming packages.
         /// </summary>
         /// <param name="value"></param>
         [MethodImpl(MethodImplOptions.Synchronized)]
@@ -67,15 +80,18 @@ namespace SmartDoor
         {
            switch(value.type)
             {
+                // Door locked
                 case packageType.motorPackageLocked:
                     Logger.DebugLog("MotorHandler : Door " + value.message);
                     lockTimer.Stop();
                     break;
-
+                
+                // Door unlocked
                 case packageType.motorPackageUnlocked:
                     Logger.DebugLog("MotorHandler : Door " + value.message);
                     break;
 
+                // An RFID tag has been found
                 case packageType.RfidPackageFound:
                     if (SecurityController.Instance.IsSecureRFIDTag(value.message))
                     {
@@ -86,7 +102,8 @@ namespace SmartDoor
                         Logger.Log("[" + value.message + "]" + " - " + "Unknown");
                     }
                     break;
-
+                
+                // RFID tag lost
                 case packageType.RfidPackageLost:
                     if (SecurityController.Instance.IsSecureRFIDTag(value.message))
                     {
@@ -114,23 +131,13 @@ namespace SmartDoor
             motorHandler.LockDoor();
         }
 
-        /// <summary>
-        /// Handle errors from observable objects this controller has subscribed to.
-        /// </summary>
-        /// <param name="error"></param>
-        public void OnError(Exception error)
-        {
-            throw new NotImplementedException();
-        }
+        public void OnError(Exception error) { }
+
+        public void OnCompleted() { }
 
         /// <summary>
-        /// 
+        /// Cancels the timer.
         /// </summary>
-        public void OnCompleted()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Dispose()
         {
             lockTimer.Dispose();

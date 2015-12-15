@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SmartDoor.Templates
+﻿namespace SmartDoor.Templates
 {
+    /// <summary>
+    /// An interface to define what a controller
+    /// is the common methods shared in them.
+    /// </summary>
     interface Controller
     {
         void Setup();

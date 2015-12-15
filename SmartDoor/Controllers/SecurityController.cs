@@ -1,11 +1,7 @@
 ﻿using SmartDoor.Templates;
 using SmartDoor.Utilities;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SmartDoor.Controllers
 {
@@ -39,6 +35,11 @@ namespace SmartDoor.Controllers
         private FileHandler fileHandler;
 
 
+        /// <summary>
+        /// Setups the rfidhandler and
+        /// subscribes the rfidhandler to the needed
+        /// controllers.
+        /// </summary>
         public void Setup()
         {
             rfidHandler.WaitForAttach();
@@ -138,6 +139,9 @@ namespace SmartDoor.Controllers
             return personHandler.isTagRegistred(tag);
         }
 
+        /// <summary>
+        /// Starts the shutdown sequence for the rfidhandler.
+        /// </summary>
         public void Shutdown()
         {
             rfidHandler.Shutdown();
