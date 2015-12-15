@@ -30,9 +30,9 @@ namespace SmartDoor.Controllers
         {
             if (interfaceKit.Attached)
             {
-                GreenLED(false);
-                YellowLED(false);
-                RedLED(false);
+                GreenLED(true);
+                YellowLED(true);
+                RedLED(true);
             } else
             {
                 Console.Error.WriteLine("Could not find interfacekit");
@@ -93,16 +93,6 @@ namespace SmartDoor.Controllers
         }
 
         /// <summary>
-        /// Toggles the RED LED
-        /// </summary>
-        /// <param name="status">Status for the LED true is on and
-        /// false is off.</param>
-        public void RedLED(bool status)
-        {
-            interfaceKit.outputs[6] = status;
-        }
-
-        /// <summary>
         /// Toggles the yellow LED.
         /// </summary>
         /// <param name="status">Status for the LED true is on and
@@ -110,6 +100,16 @@ namespace SmartDoor.Controllers
         public void YellowLED(bool status)
         {
             interfaceKit.outputs[3] = status;
+        }
+
+        /// <summary>
+        /// Toggles the RED LED
+        /// </summary>
+        /// <param name="status">Status for the LED true is on and
+        /// false is off.</param>
+        public void RedLED(bool status)
+        {
+            interfaceKit.outputs[6] = status;
         }
     }
 }

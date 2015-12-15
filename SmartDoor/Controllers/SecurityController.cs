@@ -22,6 +22,9 @@ namespace SmartDoor.Controllers
             fileHandler = new FileHandler();
         }
 
+        /// <summary>
+        /// Class accessor attribute.
+        /// </summary>
         public static SecurityController Instance
         {
             get
