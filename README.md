@@ -4,7 +4,7 @@
  The project is about combining sensors and software together to create a
  ubiqitous object with smart and simple interaction.
  
- ## Components
+## Components
  To run this project you will need the following components from Phidgets:
  * RFID Reader 1024_0
  * TextLCD Adapter 1204
@@ -17,5 +17,5 @@
  * Servo Controller 1066
  * Electric motor compatible with the servo controller.
  
- ## Installation and Compiling
+## Installation and Compiling
  
