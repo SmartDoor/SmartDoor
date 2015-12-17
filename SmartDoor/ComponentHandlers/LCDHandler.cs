@@ -12,13 +12,17 @@ namespace SmartDoor.Controllers
     /// </summary>
     class LCDHandler : Component
     {
-        public const int UNLOCKED_ICON_INDEX = 1;
         public const int LOCKED_ICON_INDEX = 0;
+        public const int UNLOCKED_ICON_INDEX = 1;
+        public const int SLEEP_ICON_INDEX = 2;
+        public const int EMPTY_ICON_INDEX = 3;
 
         private TextLCD lcdAdapter;
         private TextLCDScreen screen;
 
         private TextLCDCustomCharacter doorStatus;
+        private TextLCDCustomCharacter sleepStatus;
+        private TextLCDCustomCharacter empty;
 
         private String lastSecondRow { get; set; }
         private String lastFirstRow { get; set; }
@@ -65,7 +69,7 @@ namespace SmartDoor.Controllers
                     if(secondRow.Length > 13)
                         secondRow = secondRow.Substring(0, 14);
 
-                    firstRow = firstRow.PadRight(19) + doorStatus.StringCode;
+                    firstRow = firstRow.PadRight(18) + sleepStatus.StringCode + doorStatus.StringCode;
                     secondRow = secondRow.PadRight(15) + string.Format("{0:HH:mm}", DateTime.Now);
 
                     screen.rows[0].DisplayString = firstRow;
@@ -92,7 +96,7 @@ namespace SmartDoor.Controllers
                     if (message.Length > 13)
                         message = message.Substring(0, 14);
 
-                    lastSecondRow = lastSecondRow.PadRight(19) + doorStatus.StringCode;
+                    lastSecondRow = lastSecondRow.PadRight(18) + sleepStatus.StringCode + doorStatus.StringCode;
                     message = message.PadRight(15) + string.Format("{0:HH:mm}", DateTime.Now);
 
                     screen.rows[0].DisplayString = lastSecondRow;
@@ -144,12 +148,10 @@ namespace SmartDoor.Controllers
         public void setLockedIcon(bool status)
         {
             if(status == true)
-            {
                 doorStatus = screen.customCharacters[LOCKED_ICON_INDEX];
-            } else
-            {
+            else
                 doorStatus = screen.customCharacters[UNLOCKED_ICON_INDEX];
-            }
+
             showMessage(lastFirstRow, lastSecondRow);
         }
 
@@ -177,6 +179,18 @@ namespace SmartDoor.Controllers
             // Setup the custom characters.
             screen.customCharacters[LOCKED_ICON_INDEX].setCustomCharacter(574912, 32639);
             screen.customCharacters[UNLOCKED_ICON_INDEX].setCustomCharacter(38050, 32639);
+            screen.customCharacters[SLEEP_ICON_INDEX].setCustomCharacter(36812, 424033);
+            screen.customCharacters[EMPTY_ICON_INDEX].setCustomCharacter(0, 0);
+            empty = screen.customCharacters[EMPTY_ICON_INDEX];
+            sleepStatus = empty;
+        }
+
+        public void setSleepIcon(bool status)
+        {
+            if (status)
+                sleepStatus = screen.customCharacters[SLEEP_ICON_INDEX];
+            else
+                sleepStatus = empty;
         }
 
         /// <summary>

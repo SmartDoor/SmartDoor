@@ -143,6 +143,7 @@ namespace SmartDoor.Controllers
         /// <returns></returns>
         public bool IsSecureRFIDTag(String tag)
         {
+            readFIle();
             return personHandler.isTagRegistred(tag);
         }
 
@@ -152,6 +153,21 @@ namespace SmartDoor.Controllers
         public void Shutdown()
         {
             rfidHandler.Shutdown();
+        }
+
+        private void readFIle()
+        {
+            try
+            {
+                personHandler = fileHandler.ReadFile();
+            }
+            catch (FileNotFoundException e)
+            {
+                if (personHandler == null)
+                {
+                    personHandler = new PersonHandler();
+                }
+            }
         }
     }
 }

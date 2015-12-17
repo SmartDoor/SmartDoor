@@ -135,7 +135,7 @@ namespace SmartDoor.Controllers
                     Logger.DebugLog("isdark :" + isDark);
                     break;
                 case IR_SENSOR_INDEX:
-                    if (e.Value < 200)
+                    if (e.Value > 200)
                     {
                         isDoorClosed = true; 
                     }

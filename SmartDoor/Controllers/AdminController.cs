@@ -22,6 +22,7 @@ namespace SmartDoor.Controllers
             wantToChangeOwner = false;
             wantToCheckTag = false;
             wantToAddMessage = false;
+            setSleep = true;
         }
 
         public static AdminController Instance
@@ -43,6 +44,7 @@ namespace SmartDoor.Controllers
         private bool wantToRemoveOwner;
         private bool wantToCheckTag;
         private bool wantToAddMessage;
+        private bool setSleep;
 
         public void AdminCLI()
         {
@@ -82,7 +84,16 @@ namespace SmartDoor.Controllers
                         case "addmessage":
                             wantToAddMessage = true;
                             break;
-
+                        case "open":
+                            new Thread(new ThreadStart(MotorController.Instance.getHandler().UnlockDoor)).Start();
+                            break;
+                        case "close":
+                            new Thread(new ThreadStart(MotorController.Instance.getHandler().LockDoor)).Start();
+                            break;
+                        case "sleep":
+                            DisplayController.Instance.getHandler().setSleepIcon(setSleep);
+                            setSleep = !setSleep;
+                            break;
                         default:
                             break;
                     }
@@ -99,7 +110,7 @@ namespace SmartDoor.Controllers
                 wantToRemoveOwner ||
                 wantToChangeOwner ||
                 wantToCheckTag ||
-                wantToAddMessage)
+                wantToAddMessage )
             {
                 return true;
             }
@@ -212,4 +223,5 @@ namespace SmartDoor.Controllers
             /** ignore this */
         }
     }
+
 }

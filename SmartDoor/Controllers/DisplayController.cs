@@ -173,5 +173,10 @@ namespace SmartDoor.Controllers
         {
             updateLCDTimer.Dispose();
         }
+
+        public LCDHandler getHandler()
+        {
+            return lcdHandler;
+        }
     }  
 }

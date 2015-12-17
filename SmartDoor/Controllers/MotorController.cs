@@ -4,6 +4,7 @@ using System.Timers;
 using SmartDoor.Utilities;
 using System.Runtime.CompilerServices;
 using SmartDoor.Templates;
+using System.Diagnostics;
 
 namespace SmartDoor
 {
@@ -30,7 +31,9 @@ namespace SmartDoor
         private MotorController()
         {
             motorHandler = new MotorHandler(1);
-            lockTimer = new Timer(1000 * 5);
+            lastChange = new Stopwatch();
+
+            lockTimer = new Timer(1000);
             lockTimer.AutoReset = true;
             lockTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
         }
@@ -49,6 +52,7 @@ namespace SmartDoor
 
         private MotorHandler motorHandler;
         private Timer lockTimer;
+        private Stopwatch lastChange;
 
         /// <summary>
         /// wait for motor attachment and set subscribers.
@@ -60,6 +64,8 @@ namespace SmartDoor
             motorHandler.Subscribe(DisplayController.Instance);
             motorHandler.Subscribe(AdminController.Instance);
             motorHandler.Subscribe(InterfaceController.Instance);
+
+            lockTimer.Start();
         }
         
         /// <summary>
@@ -83,7 +89,6 @@ namespace SmartDoor
                 // Door locked
                 case packageType.motorPackageLocked:
                     Logger.DebugLog("MotorHandler : Door " + value.message);
-                    lockTimer.Stop();
                     break;
                 
                 // Door unlocked
@@ -108,7 +113,11 @@ namespace SmartDoor
                     if (SecurityController.Instance.IsSecureRFIDTag(value.message))
                     {
                         Logger.Log("[" + value.message + "]" + " - " + SecurityController.Instance.RetrievePersonByTag(value.message).name);
-                        lockTimer.Start();
+
+                        if (!lastChange.IsRunning)
+                            lastChange.Start();
+                        else
+                            lastChange.Restart();
                     } else
                     {
                         Logger.Log("[" + value.message + "]" + " - " + "Unknown");
@@ -127,8 +136,18 @@ namespace SmartDoor
         /// <param name="e"></param>
         private void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            lockTimer.Stop();
-            motorHandler.LockDoor();
+            if (lastChange.IsRunning && lastChange.Elapsed.Seconds > 3)
+            {
+                if (InterfaceController.Instance.isDoorClosed)
+                {
+                    motorHandler.LockDoor();
+                    lastChange.Stop();
+                }
+                else
+                {
+                    lastChange.Restart();
+                }
+            } 
         }
 
         public void OnError(Exception error) { }
@@ -141,6 +160,11 @@ namespace SmartDoor
         public void Dispose()
         {
             lockTimer.Dispose();
+        }
+
+        public MotorHandler getHandler()
+        {
+            return motorHandler;
         }
     }
 }
