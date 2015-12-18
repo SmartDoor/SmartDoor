@@ -95,8 +95,7 @@ namespace SmartDoor
                 case packageType.motorPackageUnlocked:
                     Logger.DebugLog("MotorHandler : Door " + value.message);
                     break;
-
-                // An RFID tag has been found
+   
                 case packageType.RfidPackageFound:
                     if (SecurityController.Instance.IsSecureRFIDTag(value.message))
                     {
@@ -108,7 +107,6 @@ namespace SmartDoor
                     }
                     break;
                 
-                // RFID tag lost
                 case packageType.RfidPackageLost:
                     if (SecurityController.Instance.IsSecureRFIDTag(value.message))
                     {

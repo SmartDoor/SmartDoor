@@ -69,7 +69,7 @@ namespace SmartDoor
             rfidReader.Antenna = true;
             rfidReader2.Antenna = true;
             rfidReader.LED = true;
-            rfidReader2.LED = true;
+            rfidReader2.LED = false;
 
             Console.Out.WriteLine("RFIDHandler : Done waiting for attachment!");
         }
@@ -89,6 +89,7 @@ namespace SmartDoor
             Package package = new Package(packageType.RfidPackageLost,e.Tag);
             foreach (var observer in observers)
                 observer.OnNext(package);
+            rfidReader2.LED = false;
         }
 
         private void rfid_Tag(object sender, TagEventArgs e)
@@ -97,6 +98,7 @@ namespace SmartDoor
             foreach (var observer in observers)
                 observer.OnNext(package);
 
+            rfidReader2.LED = true;
         }
 
         private void rfid_Error(object sender, ErrorEventArgs e)
